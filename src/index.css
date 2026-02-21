@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant scrollbar (&::-webkit-scrollbar);
+@custom-variant scrollbar-thumb (&::-webkit-scrollbar-thumb);
+@custom-variant scrollbar-track (&::-webkit-scrollbar-track);
+
+@layer base {
+  :root {
+    @theme {
+      --color-primary: var(--color-emerald-800);
+      --color-primary-hover: var(--color-emerald-900);
+      --color-primary-foreground: var(--color-white);
+      --color-secondary: var(--color-gray-100);
+      --color-secondary-hover: var(--color-gray-200);
+      --color-secondary-foreground: var(--color-gray-900);
+      --color-background: var(--color-white);
+      --color-background-dimmed1: var(--color-gray-100);
+      --color-background-dimmed2: var(--color-gray-200);
+      --color-background-border: var(--color-gray-200);
+      --color-foreground: var(--color-black);
+      --color-foreground-dimmed1: var(--color-gray-900);
+      --color-foreground-dimmed2: var(--color-gray-800);
+      --color-foreground-dimmed3: var(--color-gray-700);
+      --color-scrollbarColor: --alpha(var(--color-black) / 15%);
+    }
+
+    @variant dark {
+      --color-primary: var(--color-emerald-700);
+      --color-primary-hover: var(--color-emerald-600);
+      --color-primary-foreground: var(--color-white);
+      --color-secondary: var(--color-gray-700);
+      --color-secondary-hover: var(--color-gray-600);
+      --color-secondary-foreground: var(--color-white);
+      --color-background: var(--color-gray-900);
+      --color-background-dimmed1: var(--color-gray-800);
+      --color-background-dimmed2: var(--color-gray-700);
+      --color-background-border: var(--color-gray-800);
+      --color-foreground: var(--color-white);
+      --color-foreground-dimmed1: var(--color-gray-100);
+      --color-foreground-dimmed2: var(--color-gray-200);
+      --color-foreground-dimmed3: var(--color-gray-300);
+      --color-scrollbarColor: --alpha(var(--color-white) / 10%);
+    }
+
+    --responsive-spacing: 1rem; /* Base spacing for responsive design */
+    --responsive-inner-spacing: 0.75rem; /* Inner spacing for responsive design */
+
+    @theme {
+      --breakpoint-xxs: 390px;
+      --breakpoint-xs: 500px;
+      --breakpoint-3xl: 1750px;
+      --breakpoint-4xl: 1950px;
+      --breakpoint-5xl: 2150px;
+    }
+
+    @media screen and (min-width: --theme(--breakpoint-xs)) {
+      --responsive-inner-spacing: 0.9rem;
+    }
+    @media screen and (min-width: --theme(--breakpoint-sm)) {
+      --responsive-spacing: 1.5rem;
+      --responsive-inner-spacing: 1rem;
+    }
+    @media screen and (min-width: --theme(--breakpoint-md)) {
+      --responsive-spacing: 2rem;
+      --responsive-inner-spacing: 1.25rem;
+    }
+    @media screen and (min-width: --theme(--breakpoint-2xl)) {
+      --responsive-spacing: 3rem;
+      --responsive-inner-spacing: 1.5rem;
+    }
+  }
+
+  @theme {
+    --appSpacing: var(--responsive-spacing);
+    --appInnerSpacing: var(--responsive-inner-spacing);
+    --spacing-appSpacing: var(--responsive-spacing);
+    --spacing-appInnerSpacing: var(--responsive-inner-spacing);
+  }
+
+  @theme {
+    --text-xxs: 0.625rem; /* 10px */
+    --text-inherit: inherit;
+  }
+
+  @layer utilities {
+    .max-w-8xl {
+      max-width: 88rem; /* 1408px */
+    }
+    .max-w-9xl {
+      max-width: 96rem; /* 1536px */
+    }
+  }
+
+  @layer utilities {
+    .mask-fade {
+      -webkit-mask: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+      mask: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+    }
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen max-w-screen overflow-x-hidden;
+    font-family: "Inter", sans-serif;
+    line-height: 1.5;
+    color: var(--color-foreground);
+  }
+
+  #root {
+    @apply flex h-full min-h-screen w-full grow;
+  }
+
+  .custom-slider .slick-slide > div {
+    @apply flex h-full grow;
+  }
+  .custom-slider .slick-slide {
+    @apply flex h-full grow;
+  }
+
+  * ::-webkit-scrollbar {
+    @apply h-2 w-2;
+  }
+  * ::-webkit-scrollbar-thumb {
+    @apply bg-scrollbarColor rounded-full py-0.5;
+  }
+  * ::-webkit-scrollbar-track {
+    @apply rounded-full border-0 bg-transparent py-0.5;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply rounded px-4 py-2 font-bold transition-colors;
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+
+  .btn-secondary {
+    @apply rounded px-4 py-2 font-bold transition-colors;
+    background-color: var(--color-secondary);
+    color: var(--color-secondary-foreground);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-secondary-hover);
+  }
+}
