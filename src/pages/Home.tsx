@@ -1,4 +1,7 @@
+import { Link } from "react-router-dom";
 import ReviewCarousel from "../components/ReviewCarousel";
+import veggiesBgImage from "../assets/images/veggies-bg.jpeg";
+import veggieBoxImage from "../assets/images/veggie-box.jpg";
 
 export default function Home() {
   return (
@@ -10,20 +13,19 @@ export default function Home() {
           <p className="text-xl text-gray-100">
             Get farm-fresh produce delivered to your door every week.
           </p>
-          <a href="/build-your-box" className="btn-primary w-fit">
+          <Link to="/build-your-box" className="btn-primary w-fit">
             Get Started
-          </a>
+          </Link>
         </div>
-        <div className="mask-fade absolute top-0 left-0 z-0 h-full w-full bg-[url('src/assets/images/veggies-bg.jpeg')] bg-cover bg-no-repeat" />
+        <div
+          className="mask-fade absolute top-0 left-0 z-0 h-full w-full bg-cover bg-no-repeat"
+          style={{ backgroundImage: `url(${veggiesBgImage})` }}
+        />
       </section>
 
       {/* How It Works */}
       <section className="gap-appSpacing p-appSpacing max-w-9xl flex w-full items-center justify-center">
-        <img
-          src="src/assets/images/veggie-box.jpg"
-          alt="Harvesting"
-          className="max-w-96 shadow-lg"
-        />
+        <img src={veggieBoxImage} alt="Harvesting" className="max-w-96 shadow-lg" />
         <div className="gap-appInnerSpacing flex flex-col text-left">
           <div className="flex flex-col gap-2">
             <h2 className="text-primary text-2xl font-semibold">🌱 We Grow</h2>

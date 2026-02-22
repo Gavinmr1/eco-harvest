@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import clsx from "clsx";
 import { useAuth } from "../hooks/useAuth";
+import backgroundGradientImage from "../assets/images/background-gradient.jpg";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   clsx("hover:underline px-2 py-1", {
@@ -23,7 +24,11 @@ export default function MainLayout() {
               <NavLink
                 to="/"
                 end
-                className={({ isActive }) => `${navLinkClass} ${isActive ? "bg-green-900" : ""}`}
+                className={({ isActive }) =>
+                  clsx(navLinkClass({ isActive }), {
+                    "bg-green-900": isActive,
+                  })
+                }
               >
                 Home
               </NavLink>
@@ -31,7 +36,11 @@ export default function MainLayout() {
             <li>
               <NavLink
                 to="/about"
-                className={({ isActive }) => `${navLinkClass} ${isActive ? "bg-green-900" : ""}`}
+                className={({ isActive }) =>
+                  clsx(navLinkClass({ isActive }), {
+                    "bg-green-900": isActive,
+                  })
+                }
               >
                 About
               </NavLink>
@@ -39,7 +48,11 @@ export default function MainLayout() {
             <li>
               <NavLink
                 to="/profile"
-                className={({ isActive }) => `${navLinkClass} ${isActive ? "bg-green-900" : ""}`}
+                className={({ isActive }) =>
+                  clsx(navLinkClass({ isActive }), {
+                    "bg-green-900": isActive,
+                  })
+                }
               >
                 Profile
               </NavLink>
@@ -58,7 +71,10 @@ export default function MainLayout() {
       </header>
 
       <main className="relative z-10 mx-auto flex h-full w-full grow flex-col">
-        <div className="pointer-events-none absolute left-0 z-0 flex min-h-full w-screen grow bg-[url('src/assets/images/background-gradient.jpg')] bg-cover bg-no-repeat opacity-10 hue-rotate-290 dark:opacity-30" />
+        <div
+          className="pointer-events-none absolute left-0 z-0 flex min-h-full w-screen grow bg-cover bg-no-repeat opacity-10 hue-rotate-290 dark:opacity-30"
+          style={{ backgroundImage: `url(${backgroundGradientImage})` }}
+        />
         <div className="relative z-10">
           <Outlet />
         </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuth } from "../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -61,16 +62,16 @@ export default function Profile() {
               <p className="text-foreground-dimmed2">No preferences selected</p>
             )}
           </div>
-          <a href="/build-your-box" className="btn-primary self-start">
+          <Link to="/build-your-box" className="btn-primary self-start">
             Manage Subscription
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="border-background-border bg-background rounded border p-4 shadow">
           <p className="text-foreground-dimmed1">No subscription selected yet.</p>
-          <a href="/build-your-box" className="btn-primary mt-4">
+          <Link to="/build-your-box" className="btn-primary mt-4 inline-block">
             Get Started
-          </a>
+          </Link>
         </div>
       )}
     </div>

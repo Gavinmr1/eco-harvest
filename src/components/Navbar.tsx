@@ -5,16 +5,20 @@ export default function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="bg-white shadow py-4 px-6 flex justify-between items-center">
-      <Link to="/" className="text-xl font-bold">Eco Harvest</Link>
+    <nav className="flex items-center justify-between bg-white px-6 py-4 shadow">
+      <Link to="/" className="text-xl font-bold">
+        Eco Harvest
+      </Link>
       <div className="space-x-4">
         <Link to="/">Home</Link>
-        <Link to="/build">Build Your Box</Link>
+        <Link to="/build-your-box">Build Your Box</Link>
         <Link to="/profile">Profile</Link>
         {user ? (
           <>
             <span className="text-sm text-gray-500">{user.email}</span>
-            <button onClick={logout} className="text-red-500">Logout</button>
+            <button onClick={logout} className="text-red-500">
+              Logout
+            </button>
           </>
         ) : (
           <>

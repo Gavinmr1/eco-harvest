@@ -1,13 +1,14 @@
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Profile from "./pages/Profile";
-import Login from "./pages/auth/Login";
-import SignUp from "./pages/auth/SignUp";
 import PrivateRoute from "./routes/PrivateRoute";
-import BuildYourBox from "./pages/BuildYourBox";
-import { useEffect, useState } from "react";
+
+const MainLayout = lazy(() => import("./layouts/MainLayout"));
+const Home = lazy(() => import("./pages/Home"));
+const About = lazy(() => import("./pages/About"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const SignUp = lazy(() => import("./pages/auth/SignUp"));
+const BuildYourBox = lazy(() => import("./pages/BuildYourBox"));
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -23,29 +24,31 @@ export default function App() {
   }, [darkMode]);
 
   return (
-    <Routes>
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<Home />} />
-        <Route path="about" element={<About />} />
-        <Route
-          path="build-your-box"
-          element={
-            <PrivateRoute>
-              <BuildYourBox />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="profile"
-          element={
-            <PrivateRoute>
-              <Profile />
-            </PrivateRoute>
-          }
-        />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<SignUp />} />
-      </Route>
-    </Routes>
+    <Suspense fallback={<div className="p-4">Loading page...</div>}>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+          <Route
+            path="build-your-box"
+            element={
+              <PrivateRoute>
+                <BuildYourBox />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<SignUp />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
