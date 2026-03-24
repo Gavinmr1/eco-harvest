@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, refreshAdminStatus } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +17,8 @@ export default function Login() {
 
     try {
       await login(email, password);
-      navigate("/profile");
+      const isAdmin = await refreshAdminStatus(true);
+      navigate(isAdmin ? "/admin" : "/profile");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Login failed. Please try again.";
       setError(message);

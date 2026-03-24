@@ -1,0 +1,11 @@
+export type SubscriptionPlanOption = {
+  label: string;
+  value: string;
+  description: string;
+  weeks: number;
+};
+
+export type PreferenceOption = {
+  label: string;
+  description: string;
+};

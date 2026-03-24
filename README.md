@@ -42,6 +42,60 @@ This app is an MVP for a direct-to-consumer produce subscription service. The cu
 - npm
 - Firebase project configured for Auth + Firestore
 
+### Environment setup
+
+1. Copy `.env.example` to `.env`.
+2. Fill in your Firebase project values:
+
+```bash
+cp .env.example .env
+```
+
+Required variables:
+
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+
+Optional:
+
+- `VITE_FIREBASE_MEASUREMENT_ID`
+
+### Firestore catalog collections
+
+`BuildYourBox` now supports Firestore-driven catalog data with fallback defaults.
+
+- `catalog_plans` documents:
+  - `label` (string)
+  - `value` (string, e.g. `4-week`)
+  - `description` (string)
+  - `weeks` (number)
+- `catalog_preferences` documents:
+  - `label` (string)
+  - `description` (string)
+
+To seed default catalog data:
+
+```bash
+npm run seed:catalog
+```
+
+To seed demo admin testing data (orders, discount codes, and activity events):
+
+```bash
+npm run seed:demo-admin
+```
+
+Important: `seed:catalog` uses Firebase Admin credentials (not client auth). Set one of these in `.env` before running:
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON`
+- `FIREBASE_SERVICE_ACCOUNT_PATH`
+
+`firestore.rules` makes catalog collections read-only from clients, so admin tooling is required for writes.
+
 ### Run locally
 
 ```bash
@@ -49,12 +103,38 @@ npm install
 npm run dev
 ```
 
+Note: this project uses Vite scripts. Use `npm run dev` for local development (not `npm start`).
+
 ### Build and quality checks
 
 ```bash
 npm run lint
 npm run build
 ```
+
+### Firestore rules deployment
+
+This repo includes:
+
+- `firestore.rules`
+- `firestore.indexes.json`
+- `firebase.json`
+
+Deploy Firestore rules/indexes with Firebase CLI:
+
+```bash
+firebase login
+firebase use <your-project-id>
+firebase deploy --only firestore
+```
+
+### Asset optimization
+
+```bash
+npm run optimize:images
+```
+
+This generates optimized `.webp` assets for the main landing-page images.
 
 ## Finish Plan (Start to Deploy)
 
@@ -169,6 +249,63 @@ Goal: reduce risk before growth.
 
 ## Deployment Plan
 
+### Admin architecture decision
+
+Recommended approach right now: keep customer site and admin interface in the same project, but isolated by route and permissions.
+
+- Customer app: standard public/authenticated routes
+- Admin app: `/admin` route protected by Firebase custom claim (`admin: true`)
+- Data access: Firestore rules enforce admin-only writes for operational collections
+
+Why this is best at current stage:
+
+- Faster delivery and lower maintenance overhead
+- Shared design system/types/services reduce duplication
+- Easy to split later into separate repos/apps once admin complexity grows
+
+Current admin foundation in this repo:
+
+- `src/routes/AdminRoute.tsx` checks admin custom claim
+- `src/pages/admin/AdminDashboard.tsx` serves as operations entry point
+- `firestore.rules` allows admin writes to `catalog_*` and `orders`
+
+### Granting admin access
+
+Use Firebase custom claims via the script:
+
+```bash
+npm run set:admin -- --email your-admin@email.com
+```
+
+or by UID:
+
+```bash
+npm run set:admin -- --uid <firebase-uid>
+```
+
+To revoke admin access:
+
+```bash
+npm run set:admin -- --email your-admin@email.com --revoke
+```
+
+Required env for this script (set one):
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON`
+- `FIREBASE_SERVICE_ACCOUNT_PATH`
+
+Security note: never commit service account credentials.
+
+### Orders workflow
+
+- Customers place orders from confirmed subscription settings in `BuildYourBox`
+- Customers track their order statuses in `My Orders` (`/orders`)
+- Orders are written to `orders` with status `new`
+- Admins manage order statuses in `/admin` (`new` → `packed` → `out-for-delivery` → `delivered`)
+- Firestore rules allow:
+  - customer create + own-read
+  - admin read/write for all orders
+
 ### Recommended stack
 
 - **Frontend hosting:** Vercel (fast setup for Vite SPA) or Firebase Hosting
@@ -204,3 +341,23 @@ Goal: reduce risk before growth.
 ---
 
 This README is now the source of truth for product direction and delivery sequencing.
+
+## Progress Log
+
+- ✅ 2026-02-22: Firebase config moved to environment variables with `.env.example`.
+- ✅ 2026-02-22: Large homepage/background images converted to optimized `.webp` assets.
+- ✅ 2026-02-22: Shared subscription data types + Firestore service layer adopted by `BuildYourBox` and `Profile`.
+- ✅ 2026-02-27: Added subscription lifecycle (`active`, `paused`, `canceled`) with persisted status timestamps and profile controls.
+- ✅ 2026-02-27: Added order preview estimates and explicit subscription confirmation state/timestamp.
+- ✅ 2026-02-27: `BuildYourBox` catalog now loads plans/preferences from Firestore collections with safe fallback defaults.
+- ✅ 2026-02-27: Added repeatable Firestore catalog seed command (`npm run seed:catalog`).
+- ✅ 2026-02-27: Added baseline Firestore security rules + deployment config (`firestore.rules`, `firebase.json`).
+- ✅ 2026-02-27: Added Vite vendor manual chunking to reduce initial bundle pressure and eliminate chunk-size warnings.
+- ✅ 2026-02-27: Added admin foundation (`/admin` route, claim-based guard, and admin-scoped Firestore write rules).
+- ✅ 2026-02-27: Added order pipeline (customer place order + admin queue with status updates).
+- ✅ 2026-02-27: Added customer order tracking page (`/orders`) with user-scoped order status history.
+- ✅ 2026-02-27: Added admin-claim tooling (`npm run set:admin`) for controlled access to `/admin`.
+- ✅ 2026-02-27: Expanded admin operations with per-order discount application, refund tracking, and manual adjustment notes.
+- ✅ 2026-02-27: Added admin discount-code catalog with usage limits, expiration, minimum-order validation, and code-based order discount application.
+- ✅ 2026-02-27: Added immutable admin order activity tracking (`order_events`) and a recent-activity feed in the admin dashboard.
+- ✅ 2026-02-27: Added refund workflow with reason codes and state transitions (`requested` → `approved` → `processed`) plus approver/processor tracking.

@@ -1,0 +1,145 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function hasValidUserShape() {
+      return request.resource.data.keys().hasOnly([
+        'subscriptionPlan',
+        'subscriptionStatus',
+        'statusUpdatedAt',
+        'isSubscriptionConfirmed',
+        'confirmedAt',
+        'preferences',
+        'boxSize',
+        'fullName',
+        'phone',
+        'deliveryAddress',
+        'zipCode'
+      ]);
+    }
+
+    function hasValidUserTypes() {
+      return (!('subscriptionPlan' in request.resource.data) || request.resource.data.subscriptionPlan == null || request.resource.data.subscriptionPlan is string)
+        && (!('subscriptionStatus' in request.resource.data) || request.resource.data.subscriptionStatus in ['inactive', 'active', 'paused', 'canceled'])
+        && (!('statusUpdatedAt' in request.resource.data) || request.resource.data.statusUpdatedAt == null || request.resource.data.statusUpdatedAt is string)
+        && (!('isSubscriptionConfirmed' in request.resource.data) || request.resource.data.isSubscriptionConfirmed is bool)
+        && (!('confirmedAt' in request.resource.data) || request.resource.data.confirmedAt == null || request.resource.data.confirmedAt is string)
+        && (!('preferences' in request.resource.data) || request.resource.data.preferences is list)
+        && (!('boxSize' in request.resource.data) || request.resource.data.boxSize is string)
+        && (!('fullName' in request.resource.data) || request.resource.data.fullName is string)
+        && (!('phone' in request.resource.data) || request.resource.data.phone is string)
+        && (!('deliveryAddress' in request.resource.data) || request.resource.data.deliveryAddress is string)
+        && (!('zipCode' in request.resource.data) || request.resource.data.zipCode is string);
+    }
+
+    function hasValidOrderShape() {
+      return request.resource.data.keys().hasOnly([
+        'userId',
+        'subscriptionPlan',
+        'boxSize',
+        'preferences',
+        'estimatedWeeklyPrice',
+        'planWeeks',
+        'estimatedPlanTotal',
+        'discount',
+        'refunds',
+        'adminAdjustmentNote',
+        'adjustedAt',
+        'adjustedBy',
+        'status',
+        'createdAt',
+        'updatedAt'
+      ])
+      && request.resource.data.keys().hasAll([
+        'userId',
+        'subscriptionPlan',
+        'boxSize',
+        'preferences',
+        'estimatedWeeklyPrice',
+        'planWeeks',
+        'estimatedPlanTotal',
+        'discount',
+        'refunds',
+        'adminAdjustmentNote',
+        'adjustedAt',
+        'adjustedBy',
+        'status',
+        'createdAt',
+        'updatedAt'
+      ]);
+    }
+
+    function hasValidOrderTypes() {
+      return request.resource.data.userId is string
+        && request.resource.data.subscriptionPlan is string
+        && request.resource.data.boxSize is string
+        && request.resource.data.preferences is list
+        && request.resource.data.estimatedWeeklyPrice is number
+        && request.resource.data.planWeeks is number
+        && request.resource.data.estimatedPlanTotal is number
+        && request.resource.data.discount == null
+        && request.resource.data.refunds is list
+        && request.resource.data.refunds.size() == 0
+        && request.resource.data.adminAdjustmentNote is string
+        && request.resource.data.adminAdjustmentNote == ''
+        && request.resource.data.adjustedAt == null
+        && request.resource.data.adjustedBy == null
+        && request.resource.data.status in ['new', 'packed', 'out-for-delivery', 'delivered', 'canceled']
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt is string
+        && request.resource.data.updatedAt is string
+        && request.resource.data.createdAt == request.resource.data.updatedAt;
+    }
+
+    function isOrderOwner() {
+      return isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && hasValidUserShape() && hasValidUserTypes();
+    }
+
+    match /catalog_plans/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /catalog_preferences/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /discount_codes/{code} {
+      allow read, write: if isAdmin();
+    }
+
+    match /order_events/{eventId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAdmin() || isOrderOwner();
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && hasValidOrderShape()
+        && hasValidOrderTypes();
+      allow update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

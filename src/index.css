@@ -18,6 +18,8 @@
       --color-background-dimmed1: var(--color-gray-100);
       --color-background-dimmed2: var(--color-gray-200);
       --color-background-border: var(--color-gray-200);
+      --color-background-border-dimmed-1: var(--color-gray-300);
+      --color-background-border-dimmed-2: var(--color-gray-400);
       --color-foreground: var(--color-black);
       --color-foreground-dimmed1: var(--color-gray-900);
       --color-foreground-dimmed2: var(--color-gray-800);
@@ -36,6 +38,8 @@
       --color-background-dimmed1: var(--color-gray-800);
       --color-background-dimmed2: var(--color-gray-700);
       --color-background-border: var(--color-gray-800);
+      --color-background-border-dimmed-1: var(--color-gray-700);
+      --color-background-border-dimmed-2: var(--color-gray-600);
       --color-foreground: var(--color-white);
       --color-foreground-dimmed1: var(--color-gray-100);
       --color-foreground-dimmed2: var(--color-gray-200);

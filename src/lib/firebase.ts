@@ -3,15 +3,23 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+const getRequiredEnv = (key: keyof ImportMetaEnv) => {
+  const value = import.meta.env[key];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return value;
+};
+
 const firebaseConfig = {
-    apiKey: "AIzaSyCA86ct1Rii6yd_w_d0FUpGRG_u4ShCWOw",
-    authDomain: "eco-harvest-e87d8.firebaseapp.com",
-    projectId: "eco-harvest-e87d8",
-    storageBucket: "eco-harvest-e87d8.firebasestorage.app",
-    messagingSenderId: "199070027886",
-    appId: "1:199070027886:web:2e628373ed4071dad7567f",
-    measurementId: "G-62RNK7K35S"
-  };
+  apiKey: getRequiredEnv("VITE_FIREBASE_API_KEY"),
+  authDomain: getRequiredEnv("VITE_FIREBASE_AUTH_DOMAIN"),
+  projectId: getRequiredEnv("VITE_FIREBASE_PROJECT_ID"),
+  storageBucket: getRequiredEnv("VITE_FIREBASE_STORAGE_BUCKET"),
+  messagingSenderId: getRequiredEnv("VITE_FIREBASE_MESSAGING_SENDER_ID"),
+  appId: getRequiredEnv("VITE_FIREBASE_APP_ID"),
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+};
 
 const app = initializeApp(firebaseConfig);
 

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import ReviewCarousel from "../components/ReviewCarousel";
-import veggiesBgImage from "../assets/images/veggies-bg.jpeg";
-import veggieBoxImage from "../assets/images/veggie-box.jpg";
+import veggiesBgImage from "../assets/images/veggies-bg.webp";
+import veggieBoxImage from "../assets/images/veggie-box.webp";
 
 export default function Home() {
   return (
@@ -24,7 +24,7 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="gap-appSpacing p-appSpacing max-w-9xl flex w-full items-center justify-center">
+      <section className="gap-appSpacing p-appSpacing max-w-9xl flex w-full flex-col items-center justify-center md:flex-row">
         <img src={veggieBoxImage} alt="Harvesting" className="max-w-96 shadow-lg" />
         <div className="gap-appInnerSpacing flex flex-col text-left">
           <div className="flex flex-col gap-2">

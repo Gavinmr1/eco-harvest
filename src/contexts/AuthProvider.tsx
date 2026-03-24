@@ -12,11 +12,37 @@ import { AuthContext } from "./AuthContext";
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [adminLoading, setAdminLoading] = useState<boolean>(true);
+
+  const refreshAdminStatus = async (force = false): Promise<boolean> => {
+    const firebaseUser = auth.currentUser;
+
+    if (!firebaseUser) {
+      setIsAdmin(false);
+      setAdminLoading(false);
+      return false;
+    }
+
+    setAdminLoading(true);
+    try {
+      const tokenResult = await firebaseUser.getIdTokenResult(force);
+      const hasAdminClaim = Boolean(tokenResult.claims.admin);
+      setIsAdmin(hasAdminClaim);
+      return hasAdminClaim;
+    } catch {
+      setIsAdmin(false);
+      return false;
+    } finally {
+      setAdminLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
       setUser(firebaseUser);
       setLoading(false);
+      void refreshAdminStatus(false);
     });
 
     return () => unsubscribe();
@@ -35,7 +61,9 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, adminLoading, isAdmin, login, signup, logout, refreshAdminStatus }}
+    >
       {children}
     </AuthContext.Provider>
   );

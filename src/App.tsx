@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
+import AdminRoute from "./routes/AdminRoute";
 
 const MainLayout = lazy(() => import("./layouts/MainLayout"));
 const Home = lazy(() => import("./pages/Home"));
@@ -9,6 +10,8 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const SignUp = lazy(() => import("./pages/auth/SignUp"));
 const BuildYourBox = lazy(() => import("./pages/BuildYourBox"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const MyOrders = lazy(() => import("./pages/MyOrders"));
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -43,6 +46,22 @@ export default function App() {
               <PrivateRoute>
                 <Profile />
               </PrivateRoute>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <PrivateRoute>
+                <MyOrders />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
             }
           />
           <Route path="login" element={<Login />} />
