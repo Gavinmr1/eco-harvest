@@ -11,10 +11,18 @@ import {
   type QueueSortKey,
 } from "./tabs/OrdersTab";
 import {
+  CatalogTab,
+  type CatalogPlanFormState,
+  type CatalogPreferenceFormState,
+  type CatalogTabModel,
+} from "./tabs/CatalogTab";
+import {
   useAdminDiscountCodesQuery,
   useAdminEventsQuery,
   useAdminMutations,
   useAdminOrdersQuery,
+  useAdminCatalogPlansQuery,
+  useAdminCatalogPreferencesQuery,
 } from "../../hooks/useAdminQueries";
 import {
   getOldestRefundByStatus,
@@ -57,9 +65,9 @@ export default function AdminDashboard() {
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isPrintMenuOpen, setIsPrintMenuOpen] = useState(false);
   const queueActionsMenuRef = useRef<HTMLDivElement | null>(null);
-  const [activeTab, setActiveTab] = useState<"orders" | "discounts" | "refunds" | "activity">(
-    "orders"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "orders" | "discounts" | "catalog" | "refunds" | "activity"
+  >("orders");
   const [queueSort, setQueueSort] = useState<{
     key: QueueSortKey;
     direction: QueueSortDirection;
@@ -98,6 +106,16 @@ export default function AdminDashboard() {
   >({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
   const [discountForm, setDiscountForm] = useState<DiscountFormState>(getResetDiscountForm);
+  const [planForm, setPlanForm] = useState<CatalogPlanFormState>({
+    value: "",
+    label: "",
+    description: "",
+    weeks: "",
+  });
+  const [preferenceForm, setPreferenceForm] = useState<CatalogPreferenceFormState>({
+    label: "",
+    description: "",
+  });
 
   const getToastMeta = (toastMessage: string) => {
     const messageLower = toastMessage.toLowerCase();
@@ -152,21 +170,41 @@ export default function AdminDashboard() {
 
   const adminOrdersQuery = useAdminOrdersQuery();
   const adminDiscountCodesQuery = useAdminDiscountCodesQuery();
+  const adminCatalogPlansQuery = useAdminCatalogPlansQuery();
+  const adminCatalogPreferencesQuery = useAdminCatalogPreferencesQuery();
   const adminEventsQuery = useAdminEventsQuery(activityFeedLimit);
   const adminMutations = useAdminMutations(activityFeedLimit);
 
   const ordersData = adminOrdersQuery.data;
   const orders = ordersData ?? [];
   const discountCodes = adminDiscountCodesQuery.data ?? [];
+  const catalogPlans = adminCatalogPlansQuery.data ?? [];
+  const catalogPreferences = adminCatalogPreferencesQuery.data ?? [];
   const recentEvents = adminEventsQuery.data ?? [];
   const loading =
-    adminOrdersQuery.isLoading || adminDiscountCodesQuery.isLoading || adminEventsQuery.isLoading;
+    adminOrdersQuery.isLoading ||
+    adminDiscountCodesQuery.isLoading ||
+    adminCatalogPlansQuery.isLoading ||
+    adminCatalogPreferencesQuery.isLoading ||
+    adminEventsQuery.isLoading;
 
   useEffect(() => {
-    if (adminOrdersQuery.isError || adminDiscountCodesQuery.isError || adminEventsQuery.isError) {
-      setMessage("Unable to load orders.");
+    if (
+      adminOrdersQuery.isError ||
+      adminDiscountCodesQuery.isError ||
+      adminCatalogPlansQuery.isError ||
+      adminCatalogPreferencesQuery.isError ||
+      adminEventsQuery.isError
+    ) {
+      setMessage("Unable to load admin data.");
     }
-  }, [adminDiscountCodesQuery.isError, adminEventsQuery.isError, adminOrdersQuery.isError]);
+  }, [
+    adminCatalogPlansQuery.isError,
+    adminCatalogPreferencesQuery.isError,
+    adminDiscountCodesQuery.isError,
+    adminEventsQuery.isError,
+    adminOrdersQuery.isError,
+  ]);
 
   useEffect(() => {
     if (!message) {
@@ -473,6 +511,82 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleSavePlan = async () => {
+    const value = planForm.value.trim();
+    const label = planForm.label.trim();
+    const description = planForm.description.trim();
+    const weeks = Number(planForm.weeks);
+
+    if (!value || !label || !description || Number.isNaN(weeks) || weeks < 1) {
+      setMessage("Enter a valid plan value, label, description, and weeks.");
+      return;
+    }
+
+    try {
+      await adminMutations.upsertCatalogPlanMutation.mutateAsync({
+        value,
+        label,
+        description,
+        weeks,
+      });
+      setPlanForm({ value: "", label: "", description: "", weeks: "" });
+      setMessage("Catalog plan saved.");
+    } catch (error) {
+      console.error("Failed to save catalog plan:", error);
+      setMessage("Unable to save catalog plan.");
+    }
+  };
+
+  const handleDeletePlan = async (planValue: string) => {
+    if (!window.confirm(`Delete catalog plan \"${planValue}\"?`)) {
+      return;
+    }
+
+    try {
+      await adminMutations.deleteCatalogPlanMutation.mutateAsync(planValue);
+      setMessage("Catalog plan deleted.");
+    } catch (error) {
+      console.error("Failed to delete catalog plan:", error);
+      setMessage("Unable to delete catalog plan.");
+    }
+  };
+
+  const handleSavePreference = async () => {
+    const label = preferenceForm.label.trim();
+    const description = preferenceForm.description.trim();
+
+    if (!label || !description) {
+      setMessage("Enter a preference label and description.");
+      return;
+    }
+
+    try {
+      await adminMutations.upsertCatalogPreferenceMutation.mutateAsync({
+        label,
+        description,
+      });
+      setPreferenceForm({ label: "", description: "" });
+      setMessage("Catalog preference saved.");
+    } catch (error) {
+      console.error("Failed to save catalog preference:", error);
+      setMessage("Unable to save catalog preference.");
+    }
+  };
+
+  const handleDeletePreference = async (label: string) => {
+    if (!window.confirm(`Delete catalog preference \"${label}\"?`)) {
+      return;
+    }
+
+    try {
+      await adminMutations.deleteCatalogPreferenceMutation.mutateAsync(label);
+      setMessage("Catalog preference deleted.");
+    } catch (error) {
+      console.error("Failed to delete catalog preference:", error);
+      setMessage("Unable to delete catalog preference.");
+    }
+  };
+
   const handleExportQueueCsv = () => {
     if (limitedDisplayedOrders.length === 0) {
       setMessage("No orders available to export.");
@@ -631,6 +745,19 @@ export default function AdminDashboard() {
     recentEvents,
   };
 
+  const catalogTabModel: CatalogTabModel = {
+    plans: catalogPlans,
+    preferences: catalogPreferences,
+    planForm,
+    setPlanForm,
+    preferenceForm,
+    setPreferenceForm,
+    handleSavePlan,
+    handleDeletePlan,
+    handleSavePreference,
+    handleDeletePreference,
+  };
+
   if (loading) {
     return <div className="p-6">Loading...</div>;
   }
@@ -706,6 +833,17 @@ export default function AdminDashboard() {
           <button
             type="button"
             className={`text-foreground border-b px-4 py-2 text-sm ${
+              activeTab === "catalog"
+                ? "border-green-500 text-green-700"
+                : "border-transparent text-white"
+            }`}
+            onClick={() => setActiveTab("catalog")}
+          >
+            Catalog
+          </button>
+          <button
+            type="button"
+            className={`text-foreground border-b px-4 py-2 text-sm ${
               activeTab === "activity"
                 ? "border-green-500 text-green-700"
                 : "border-transparent text-white"
@@ -720,6 +858,7 @@ export default function AdminDashboard() {
       {activeTab === "refunds" ? <RefundsTab model={refundsTabModel} /> : null}
       {activeTab === "discounts" ? <DiscountsTab model={discountsTabModel} /> : null}
       {activeTab === "orders" ? <OrdersTab model={ordersTabModel} /> : null}
+      {activeTab === "catalog" ? <CatalogTab model={catalogTabModel} /> : null}
       {activeTab === "activity" ? <ActivityTab model={activityTabModel} /> : null}
 
       {message ? (

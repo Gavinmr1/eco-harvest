@@ -126,7 +126,7 @@ export default function Navbar() {
             className="hover:bg-background-dimmed1 rounded p-2 transition-colors md:hidden"
             onClick={() => setIsMobileNavOpen(true)}
           >
-            <MenuIcon />
+            <MenuIcon className="h-5 w-5" />
           </button>
         </nav>
       </header>
@@ -155,13 +155,13 @@ export default function Navbar() {
             className="hover:bg-background-dimmed1 rounded p-2 transition-colors"
             onClick={() => setIsMobileNavOpen(false)}
           >
-            <CloseIcon />
+            <CloseIcon className="h-5 w-5" />
           </button>
         </div>
 
         <nav className="flex flex-col gap-1">
           <NavLink to="/" end className={mobileLinkClass}>
-            <HomeIcon />
+            <HomeIcon className="h-4 w-4" />
             <span>Home</span>
           </NavLink>
 
@@ -170,12 +170,12 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink to="/build-your-box" className={mobileLinkClass}>
-            <BoxIcon />
+            <BoxIcon className="h-4 w-4" />
             <span>Build Your Box</span>
           </NavLink>
 
           <NavLink to="/profile" className={mobileLinkClass}>
-            <ProfileIcon />
+            <ProfileIcon className="h-4 w-4" />
             <span>Profile</span>
           </NavLink>
 
@@ -197,17 +197,17 @@ export default function Navbar() {
               onClick={handleLogout}
               className="hover:bg-background-dimmed1 flex items-center gap-2 rounded px-3 py-2 text-left text-red-500 transition-colors"
             >
-              <LogoutIcon />
+              <LogoutIcon className="h-4 w-4" />
               <span>Logout</span>
             </button>
           ) : (
             <>
               <NavLink to="/login" className={mobileLinkClass}>
-                <LoginIcon />
+                <LoginIcon className="h-4 w-4" />
                 <span>Login</span>
               </NavLink>
               <NavLink to="/signup" className={mobileLinkClass}>
-                <SignUpIcon />
+                <SignUpIcon className="h-4 w-4" />
                 <span>Signup</span>
               </NavLink>
             </>

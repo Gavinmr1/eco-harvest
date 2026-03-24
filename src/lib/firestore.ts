@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -15,7 +16,12 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { EMPTY_SUBSCRIPTION, type SubscriptionData } from "../types/subscription";
-import { type PreferenceOption, type SubscriptionPlanOption } from "../types/catalog";
+import {
+  type PreferenceOption,
+  type SubscriptionPlanOption,
+  type UpsertCatalogPlanInput,
+  type UpsertCatalogPreferenceInput,
+} from "../types/catalog";
 import {
   type DiscountCodeRecord,
   type DiscountType,
@@ -102,6 +108,80 @@ export const getPreferenceOptions = async (): Promise<PreferenceOption[]> => {
   return options.sort((firstOption, secondOption) =>
     firstOption.label.localeCompare(secondOption.label)
   );
+};
+
+const getPlanDocId = (value: string) => {
+  const cleanedValue = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return cleanedValue || "plan";
+};
+
+const getPreferenceDocId = (label: string) => {
+  const cleanedLabel = label
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return cleanedLabel || "preference";
+};
+
+export const upsertCatalogPlan = async (input: UpsertCatalogPlanInput) => {
+  const value = input.value.trim();
+  const label = input.label.trim();
+  const description = input.description.trim();
+  const weeks = Math.floor(input.weeks);
+
+  if (!value || !label || !description || !Number.isFinite(weeks) || weeks < 1) {
+    throw new Error("Plan value, label, description, and a valid weeks count are required.");
+  }
+
+  const ref = doc(db, "catalog_plans", getPlanDocId(value));
+  await setDoc(
+    ref,
+    {
+      value,
+      label,
+      description,
+      weeks,
+    },
+    { merge: true }
+  );
+};
+
+export const deleteCatalogPlan = async (value: string) => {
+  const ref = doc(db, "catalog_plans", getPlanDocId(value));
+  await deleteDoc(ref);
+};
+
+export const upsertCatalogPreference = async (input: UpsertCatalogPreferenceInput) => {
+  const label = input.label.trim();
+  const description = input.description.trim();
+
+  if (!label || !description) {
+    throw new Error("Preference label and description are required.");
+  }
+
+  const ref = doc(db, "catalog_preferences", getPreferenceDocId(label));
+  await setDoc(
+    ref,
+    {
+      label,
+      description,
+    },
+    { merge: true }
+  );
+};
+
+export const deleteCatalogPreference = async (label: string) => {
+  const ref = doc(db, "catalog_preferences", getPreferenceDocId(label));
+  await deleteDoc(ref);
 };
 
 export const createOrder = async (input: CreateOrderInput): Promise<string> => {

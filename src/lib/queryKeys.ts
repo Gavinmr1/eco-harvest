@@ -5,5 +5,7 @@ export const queryKeys = {
   preferenceOptions: ["preference-options"] as const,
   adminOrders: ["admin-orders"] as const,
   adminDiscountCodes: ["admin-discount-codes"] as const,
+  adminCatalogPlans: ["admin-catalog-plans"] as const,
+  adminCatalogPreferences: ["admin-catalog-preferences"] as const,
   adminEvents: (limit: number) => ["admin-events", limit] as const,
 };

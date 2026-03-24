@@ -1,6 +1,6 @@
 import { Fragment, type Dispatch, type RefObject, type SetStateAction } from "react";
-import arrowDownTray from "../../../assets/svgs/arrow-down-tray.svg";
-import printer from "../../../assets/svgs/printer.svg";
+import ArrowDownTrayIcon from "../../../assets/svgs/arrow-down-tray.svg?react";
+import PrinterIcon from "../../../assets/svgs/printer.svg?react";
 import { type OrderRecord, type OrderStatus, type RefundReasonCode } from "../../../types/order";
 import {
   calculateDiscountAmount,
@@ -221,7 +221,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                 setIsPrintMenuOpen(false);
               }}
             >
-              <img src={arrowDownTray} alt="Export" className="h-4 w-4" />
+              <ArrowDownTrayIcon className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {isExportMenuOpen ? (
@@ -261,7 +261,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                 setIsExportMenuOpen(false);
               }}
             >
-              <img src={printer} alt="Print" className="h-4 w-4" />
+              <PrinterIcon className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {isPrintMenuOpen ? (
