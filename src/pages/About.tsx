@@ -1,6 +1,8 @@
+import ReviewCarousel from "../components/ReviewCarousel";
+
 export default function About() {
   return (
-    <main className="text-foreground dark:text-secondary-foreground mx-auto max-w-4xl px-4 py-16">
+    <main className="text-foreground dark:text-secondary-foreground mx-auto flex max-w-4xl flex-col px-4 py-16">
       <section className="mb-12 text-center">
         <h1 className="text-primary mb-4 text-4xl font-bold">About Eco Harvest</h1>
         <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
@@ -44,6 +46,13 @@ export default function About() {
             When you subscribe, you’re helping us build a more sustainable future together.
           </p>
         </div>
+      </section>
+
+      <section className="gap-appInnerSpacing py-appSpacing flex flex-col">
+        <h2 className="text-primary text-center text-2xl font-bold">
+          Why Families Keep Coming Back
+        </h2>
+        <ReviewCarousel />
       </section>
     </main>
   );

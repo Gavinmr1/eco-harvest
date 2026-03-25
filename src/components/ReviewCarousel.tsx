@@ -37,7 +37,7 @@ const reviews = [
 
 const ReviewCarousel = () => {
   const settings = {
-    dots: true,
+    dots: false,
     arrows: false, // hides left/right arrows
     infinite: true,
     speed: 10000, // smooth slow transition
@@ -47,6 +47,7 @@ const ReviewCarousel = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     pauseOnHover: false,
+    variableWidth: true, // key option
     responsive: [
       {
         breakpoint: 1024,
@@ -66,11 +67,11 @@ const ReviewCarousel = () => {
   return (
     <Slider {...settings} className="[&_>_.slick-list_>_.slick-track]:py-4">
       {reviews.map((review, index) => (
-        <div key={index} className="flex h-56 px-2">
-          <div className="from-background-dimmed1/50 to-background-dimmed2/30 flex h-full cursor-pointer flex-col justify-between rounded-2xl bg-linear-to-b p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-            <div className="flex-1">
-              <h3 className="text-foreground mb-2 text-lg font-semibold">{review.name}</h3>
-              <p className="text-foreground-dimmed2 mb-4">{review.review}</p>
+        <div key={index} className="flex h-40 px-2">
+          <div className="from-background-dimmed1/50 to-background-dimmed2/30 flex h-full w-fit cursor-pointer flex-col justify-between gap-2 rounded-2xl bg-linear-to-b p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:shadow-lg">
+            <div className="flex w-70 flex-col gap-2">
+              <h3 className="text-foreground text-lg font-semibold">{review.name}</h3>
+              <p className="text-foreground-dimmed2 line-clamp-2">{review.review}</p>
             </div>
             <div className="text-lg text-yellow-400">
               {"★".repeat(review.rating)}
