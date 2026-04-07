@@ -7,7 +7,7 @@ interface AuthContextProps {
   adminLoading: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, fullName: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshAdminStatus: (force?: boolean) => Promise<boolean>;
 }

@@ -1,4 +1,5 @@
 import { type RefundReasonCode } from "../../../types/order";
+import Typography from "../../../components/Typography";
 
 export type AgingRequestedRefundItem = {
   orderId: string;
@@ -33,28 +34,28 @@ export function RefundsTab({ model }: RefundsTabProps) {
 
   return (
     <section className="border-background-border bg-background rounded border p-4 shadow">
-      <h2 className="text-foreground-dimmed1 text-lg font-semibold">Refund Overview</h2>
+      <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Refund Overview</Typography>
       <div className="mt-3 grid gap-3 md:grid-cols-3">
         <div className="border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Waiting for approval</p>
-          <p className="text-xl font-semibold">{pendingApprovalCount}</p>
+          <Typography as="p" className="text-foreground-dimmed2">Waiting for approval</Typography>
+          <Typography as="p" className="text-xl font-semibold">{pendingApprovalCount}</Typography>
         </div>
         <div className="border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Processed this week</p>
-          <p className="text-xl font-semibold">${processedThisWeekTotal.toFixed(2)}</p>
+          <Typography as="p" className="text-foreground-dimmed2">Processed this week</Typography>
+          <Typography as="p" className="text-xl font-semibold">${processedThisWeekTotal.toFixed(2)}</Typography>
         </div>
         <div className="border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Overdue refunds (&gt;{refundSlaDays}d)</p>
-          <p className="text-xl font-semibold">{slaBreachedCount}</p>
+          <Typography as="p" className="text-foreground-dimmed2">Overdue refunds (&gt;{refundSlaDays}d)</Typography>
+          <Typography as="p" className="text-xl font-semibold">{slaBreachedCount}</Typography>
         </div>
       </div>
 
       <div className="mt-4">
-        <h3 className="text-foreground-dimmed1 text-sm font-semibold">Oldest waiting refunds</h3>
+        <Typography as="h3" className="text-foreground-dimmed1 text-sm font-semibold">Oldest waiting refunds</Typography>
         {agingRequestedRefunds.length === 0 ? (
-          <p className="text-foreground-dimmed2 mt-2 text-xs">
+          <Typography as="p" className="text-foreground-dimmed2 mt-2 text-xs">
             No requested refunds waiting on approval.
-          </p>
+          </Typography>
         ) : (
           <div className="mt-2 overflow-x-auto">
             <table className="min-w-full border-collapse text-left text-xs">

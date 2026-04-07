@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "react-aria-components";
 import { useAuth } from "../../hooks/useAuth";
 import { type OrderRecord, type OrderStatus, type RefundReasonCode } from "../../types/order";
 import { RefundsTab, type RefundsTabModel } from "./tabs/RefundsTab";
@@ -32,6 +33,8 @@ import {
 } from "./utils/orderQueue";
 import { exportQueueCsv, printQueue } from "./utils/orderQueueIO";
 import { getOrderQueueSummaryMetrics } from "./utils/orderQueueMetrics";
+import Typography from "../../components/Typography";
+import LeafLoader from "../../components/LeafLoader";
 import {
   getDiscountDraft,
   getRefundDraft,
@@ -759,99 +762,125 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center p-6">
+        <LeafLoader label="Loading admin dashboard" />
+      </div>
+    );
   }
 
   const toastMeta = getToastMeta(message);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-6">
-      <h1 className="text-primary text-2xl font-semibold">Admin Dashboard</h1>
-      <p className="text-foreground-dimmed2">
+      <Typography as="h1" className="text-primary text-2xl font-semibold">
+        Admin Dashboard
+      </Typography>
+      <Typography as="p" className="text-foreground-dimmed2">
         This area is reserved for operational workflows (order queue, subscription oversight, and
         customer support actions).
-      </p>
+      </Typography>
 
       <section className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Orders</p>
-          <p className="text-xl font-semibold">{orders.length}</p>
+          <Typography as="p" className="text-foreground-dimmed2">
+            Orders
+          </Typography>
+          <Typography as="p" className="text-xl font-semibold">
+            {orders.length}
+          </Typography>
         </div>
         <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Active discount codes</p>
-          <p className="text-xl font-semibold">{activeDiscountCodeCount}</p>
+          <Typography as="p" className="text-foreground-dimmed2">
+            Active discount codes
+          </Typography>
+          <Typography as="p" className="text-xl font-semibold">
+            {activeDiscountCodeCount}
+          </Typography>
         </div>
         <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Refunds waiting for approval</p>
-          <p className="text-xl font-semibold">{pendingApprovalCount}</p>
+          <Typography as="p" className="text-foreground-dimmed2">
+            Refunds waiting for approval
+          </Typography>
+          <Typography as="p" className="text-xl font-semibold">
+            {pendingApprovalCount}
+          </Typography>
         </div>
         <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Overdue refunds</p>
-          <p className="text-xl font-semibold">{slaBreachedCount}</p>
+          <Typography as="p" className="text-foreground-dimmed2">
+            Overdue refunds
+          </Typography>
+          <Typography as="p" className="text-xl font-semibold">
+            {slaBreachedCount}
+          </Typography>
         </div>
         <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <p className="text-foreground-dimmed2">Gross order value</p>
-          <p className="text-xl font-semibold">${totalGrossOrderValue.toFixed(2)}</p>
+          <Typography as="p" className="text-foreground-dimmed2">
+            Gross order value
+          </Typography>
+          <Typography as="p" className="text-xl font-semibold">
+            ${totalGrossOrderValue.toFixed(2)}
+          </Typography>
         </div>
       </section>
 
       <section className="border-background-border border-b">
         <div className="flex flex-wrap gap-2">
-          <button
+          <Button
             type="button"
             className={`text-foreground border-b px-4 py-2 text-sm ${
               activeTab === "orders"
                 ? "border-green-500 text-green-700"
                 : "border-transparent text-white"
             }`}
-            onClick={() => setActiveTab("orders")}
+            onPress={() => setActiveTab("orders")}
           >
             Orders
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             className={`text-foreground border-b px-4 py-2 text-sm ${
               activeTab === "discounts"
                 ? "border-green-500 text-green-700"
                 : "border-transparent text-white"
             }`}
-            onClick={() => setActiveTab("discounts")}
+            onPress={() => setActiveTab("discounts")}
           >
             Discounts
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             className={`text-foreground border-b px-4 py-2 text-sm ${
               activeTab === "refunds"
                 ? "border-green-500 text-green-700"
                 : "border-transparent text-white"
             }`}
-            onClick={() => setActiveTab("refunds")}
+            onPress={() => setActiveTab("refunds")}
           >
             Refunds
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             className={`text-foreground border-b px-4 py-2 text-sm ${
               activeTab === "catalog"
                 ? "border-green-500 text-green-700"
                 : "border-transparent text-white"
             }`}
-            onClick={() => setActiveTab("catalog")}
+            onPress={() => setActiveTab("catalog")}
           >
             Catalog
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             className={`text-foreground border-b px-4 py-2 text-sm ${
               activeTab === "activity"
                 ? "border-green-500 text-green-700"
                 : "border-transparent text-white"
             }`}
-            onClick={() => setActiveTab("activity")}
+            onPress={() => setActiveTab("activity")}
           >
             Activity
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -873,24 +902,29 @@ export default function AdminDashboard() {
             className={`pointer-events-auto max-w-md min-w-72 rounded border px-3 py-2 text-sm shadow ${toastMeta.containerClass}`}
           >
             <div className="flex items-start gap-2">
-              <span
+              <Typography
+                as="span"
                 className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${toastMeta.iconClass}`}
                 aria-hidden="true"
               >
                 {toastMeta.icon}
-              </span>
+              </Typography>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold">{toastMeta.label}</p>
-                <p className="mt-0.5 break-words">{message}</p>
+                <Typography as="p" className="text-xs font-semibold">
+                  {toastMeta.label}
+                </Typography>
+                <Typography as="p" className="mt-0.5 break-words">
+                  {message}
+                </Typography>
               </div>
-              <button
+              <Button
                 type="button"
                 className="hover:bg-background-dimmed1 rounded px-1 py-0.5 text-xs"
-                onClick={hideToastNow}
+                onPress={hideToastNow}
                 aria-label="Dismiss message"
               >
                 ✕
-              </button>
+              </Button>
             </div>
           </div>
         </div>

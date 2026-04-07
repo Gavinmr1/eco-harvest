@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import clsx from "clsx";
+import { Button } from "react-aria-components";
 import { useAuth } from "../hooks/useAuth";
 import HomeIcon from "../assets/svgs/home.svg?react";
 import PackageIcon from "../assets/svgs/package.svg?react";
@@ -14,6 +15,7 @@ import SignUpIcon from "../assets/svgs/signup.svg?react";
 import LogoutIcon from "../assets/svgs/logout.svg?react";
 import MenuIcon from "../assets/svgs/menu.svg?react";
 import CloseIcon from "../assets/svgs/close.svg?react";
+import Typography from "./Typography";
 
 const desktopLinkClass = ({ isActive }: { isActive: boolean }) =>
   clsx(
@@ -124,20 +126,20 @@ export default function Navbar() {
     <>
       <header
         className={clsx(
-          "text-primary-foreground sticky top-0 z-10 w-full transition-all duration-300",
+          "text-primary-foreground sticky top-0 z-20 w-full transition-all duration-300",
           hasScrolled
             ? "border-b border-white/10 bg-white/10 shadow-lg backdrop-blur-lg"
             : "border-transparent bg-transparent shadow-none"
         )}
       >
-        <nav className="px-appSpacing max-w-9xl py-appInnerSpacing mx-auto flex w-full items-center justify-between">
+        <nav className="px-appSpacing max-w-9xl mx-auto flex w-full items-center justify-between py-3">
           <NavLink to="/" className="flex items-center gap-2 text-2xl font-semibold">
             <LeafIcon className="flex size-8 shrink-0" />
             Eco Harvest
           </NavLink>
 
           {/* Desktop */}
-          <ul className="group/nav relative hidden items-center gap-2 rounded-full bg-black/10 p-1 shadow-lg backdrop-blur-lg md:flex">
+          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full bg-black/10 p-1 shadow-lg backdrop-blur-lg md:flex">
             <li>
               <NavLink to="/" end className={desktopLinkClass}>
                 <HomeIcon className={iconStyles} />
@@ -168,18 +170,18 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="relative hidden md:flex" ref={profileMenuRef}>
-                <button
+                <Button
                   type="button"
-                  onClick={() => setIsProfileMenuOpen(o => !o)}
+                  onPress={() => setIsProfileMenuOpen(o => !o)}
                   aria-label="Open profile menu"
                   aria-expanded={isProfileMenuOpen}
                   className="flex size-10 items-center justify-center rounded-full bg-yellow-500 text-base font-semibold text-white shadow transition-all duration-300 hover:bg-yellow-400"
                 >
                   {getUserInitials(user)}
-                </button>
+                </Button>
 
                 {isProfileMenuOpen && (
-                  <div className="absolute top-full right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-lg backdrop-blur-lg">
+                  <div className="bg-background absolute top-full right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
                     <div className="flex flex-col gap-1 py-1">
                       <NavLink
                         to="/profile"
@@ -207,25 +209,25 @@ export default function Navbar() {
                       </NavLink>
 
                       <hr className="my-1 border-white/10" />
-                      <button
+                      <Button
                         type="button"
-                        onClick={handleLogout}
+                        onPress={handleLogout}
                         className="flex items-center gap-2 px-4 py-2 text-left text-red-400 transition-all hover:bg-white/10"
                       >
                         <LogoutIcon className="size-4 shrink-0" />
                         Logout
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
               <div className="hidden gap-2 sm:flex">
-                <NavLink to="/signup" className="btn-secondary px-5 py-2">
+                <NavLink to="/signup" className="btn-secondary">
                   <SignUpIcon className={clsx(iconStyles, "sm:hidden")} />
                   Signup
                 </NavLink>
-                <NavLink to="/login" className="btn-tertiary px-5 py-2">
+                <NavLink to="/login" className="btn-tertiary">
                   <LoginIcon className={clsx(iconStyles, "sm:hidden")} />
                   Login
                 </NavLink>
@@ -233,16 +235,16 @@ export default function Navbar() {
             )}
 
             {/* Mobile open button */}
-            <button
+            <Button
               type="button"
               aria-label="Open navigation menu"
               aria-expanded={isMobileNavOpen}
               aria-controls="mobile-nav"
               className="cursor-pointer rounded p-1 transition-colors hover:bg-black/10 hover:backdrop-blur-lg md:hidden"
-              onClick={() => setIsMobileNavOpen(true)}
+              onPress={() => setIsMobileNavOpen(true)}
             >
               <MenuIcon className="size-8" />
-            </button>
+            </Button>
           </div>
         </nav>
       </header>
@@ -258,84 +260,91 @@ export default function Navbar() {
       <aside
         id="mobile-nav"
         aria-label="Mobile navigation"
-        className={`bg-background/50 border-background-border fixed top-0 right-0 z-50 h-full w-72 border-l p-4 shadow-lg backdrop-blur-lg transition-transform duration-300 md:hidden ${
+        className={`bg-background/50 xs:border-background-border xs:w-72 xs:border-l fixed top-0 right-0 z-50 h-full w-full p-4 shadow-lg backdrop-blur-lg transition-transform duration-300 md:hidden ${
           isMobileNavOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <nav className="flex h-full flex-col gap-2">
-          <button
-            type="button"
-            aria-label="Close navigation menu"
-            className="ml-auto cursor-pointer rounded p-1 transition-colors hover:bg-white/10 hover:backdrop-blur-lg"
-            onClick={() => setIsMobileNavOpen(false)}
-          >
-            <CloseIcon className="h-5 w-5" />
-          </button>
-
-          <NavLink to="/" end className={mobileLinkClass}>
-            <HomeIcon className={iconStyles} />
-            Home
-          </NavLink>
-          <NavLink to="/about" className={mobileLinkClass}>
-            <AboutIcon className={iconStyles} />
-            About
-          </NavLink>
-          <NavLink to="/faq" className={mobileLinkClass}>
-            <FAQIcon className={iconStyles} />
-            FAQ
-          </NavLink>
-          {user && isAdmin && (
-            <NavLink to="/admin" className={mobileLinkClass}>
-              <PackageIcon className={iconStyles} />
-              Admin
+        <nav className="flex h-full flex-col gap-6">
+          <div className="flex gap-4">
+            <NavLink to="/" className="flex items-center gap-2 text-2xl font-semibold">
+              <LeafIcon className="flex size-8 shrink-0" />
+              Eco Harvest
             </NavLink>
-          )}
-          {user && (
-            <>
-              <NavLink
-                to="/profile"
-                className={mobileLinkClass}
-                onClick={() => setIsProfileMenuOpen(false)}
-              >
-                <ProfileIcon className={iconStyles} />
-                Profile
-              </NavLink>
-              <NavLink
-                to="/orders"
-                className={mobileLinkClass}
-                onClick={() => setIsProfileMenuOpen(false)}
-              >
-                <TruckIcon className={iconStyles} />
-                Orders
-              </NavLink>
-              <NavLink
-                to="/build-your-box"
-                className={mobileLinkClass}
-                onClick={() => setIsProfileMenuOpen(false)}
-              >
-                <PackageIcon className={iconStyles} />
-                Build Your Box
-              </NavLink>
-            </>
-          )}
-          {user ? (
-            <button
+            <Button
               type="button"
-              onClick={handleLogout}
+              aria-label="Close navigation menu"
+              className="ml-auto cursor-pointer self-start rounded p-1 transition-colors hover:bg-white/10 hover:backdrop-blur-lg"
+              onPress={() => setIsMobileNavOpen(false)}
+            >
+              <CloseIcon className="size-5" />
+            </Button>
+          </div>
+          <div className="flex flex-col gap-4">
+            <NavLink to="/" end className={mobileLinkClass}>
+              <HomeIcon className={iconStyles} />
+              Home
+            </NavLink>
+            <NavLink to="/about" className={mobileLinkClass}>
+              <AboutIcon className={iconStyles} />
+              About
+            </NavLink>
+            <NavLink to="/faq" className={mobileLinkClass}>
+              <FAQIcon className={iconStyles} />
+              FAQ
+            </NavLink>
+            {user && isAdmin && (
+              <NavLink to="/admin" className={mobileLinkClass}>
+                <PackageIcon className={iconStyles} />
+                Admin
+              </NavLink>
+            )}
+            {user && (
+              <>
+                <NavLink
+                  to="/profile"
+                  className={mobileLinkClass}
+                  onClick={() => setIsProfileMenuOpen(false)}
+                >
+                  <ProfileIcon className={iconStyles} />
+                  Profile
+                </NavLink>
+                <NavLink
+                  to="/orders"
+                  className={mobileLinkClass}
+                  onClick={() => setIsProfileMenuOpen(false)}
+                >
+                  <TruckIcon className={iconStyles} />
+                  Orders
+                </NavLink>
+                <NavLink
+                  to="/build-your-box"
+                  className={mobileLinkClass}
+                  onClick={() => setIsProfileMenuOpen(false)}
+                >
+                  <PackageIcon className={iconStyles} />
+                  Build Your Box
+                </NavLink>
+              </>
+            )}
+          </div>
+          {user ? (
+            <Button
+              type="button"
+              onPress={handleLogout}
               className="btn-tertiary mt-auto w-full px-3 py-2"
             >
               <LogoutIcon className="h-4 w-4" />
-              <span>Logout</span>
-            </button>
+              <Typography as="span">Logout</Typography>
+            </Button>
           ) : (
             <>
               <NavLink to="/login" className={mobileLinkClass}>
                 <LoginIcon className="h-4 w-4" />
-                <span>Login</span>
+                <Typography as="span">Login</Typography>
               </NavLink>
               <NavLink to="/signup" className={mobileLinkClass}>
                 <SignUpIcon className="h-4 w-4" />
-                <span>Signup</span>
+                <Typography as="span">Signup</Typography>
               </NavLink>
             </>
           )}

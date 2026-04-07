@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
   signOut,
   type User,
 } from "firebase/auth";
@@ -52,8 +53,13 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signup = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+  const signup = async (email: string, password: string, fullName: string) => {
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    const trimmedFullName = fullName.trim();
+
+    if (trimmedFullName) {
+      await updateProfile(credential.user, { displayName: trimmedFullName });
+    }
   };
 
   const logout = async () => {

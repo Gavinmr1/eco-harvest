@@ -1,5 +1,8 @@
 import { type Dispatch, type SetStateAction } from "react";
+import { Button } from "react-aria-components";
 import { type PreferenceOption, type SubscriptionPlanOption } from "../../../types/catalog";
+import FormInput from "../../../components/FormInput";
+import Typography from "../../../components/Typography";
 
 export type CatalogPlanFormState = {
   value: string;
@@ -47,31 +50,31 @@ export function CatalogTab({ model }: CatalogTabProps) {
   return (
     <section className="grid gap-4 lg:grid-cols-2">
       <div className="border-background-border bg-background rounded border p-4 shadow">
-        <h2 className="text-foreground-dimmed1 text-lg font-semibold">Catalog Plans</h2>
+        <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Catalog Plans</Typography>
 
         <div className="mt-3 grid gap-2">
-          <input
-            className="border-background-border bg-background rounded border p-2 text-sm"
+          <FormInput
+            className="rounded border p-2 text-sm"
             placeholder="Value (e.g. 12-week)"
             value={planForm.value}
             onChange={event => setPlanForm(current => ({ ...current, value: event.target.value }))}
           />
-          <input
-            className="border-background-border bg-background rounded border p-2 text-sm"
+          <FormInput
+            className="rounded border p-2 text-sm"
             placeholder="Label"
             value={planForm.label}
             onChange={event => setPlanForm(current => ({ ...current, label: event.target.value }))}
           />
-          <input
-            className="border-background-border bg-background rounded border p-2 text-sm"
+          <FormInput
+            className="rounded border p-2 text-sm"
             placeholder="Description"
             value={planForm.description}
             onChange={event =>
               setPlanForm(current => ({ ...current, description: event.target.value }))
             }
           />
-          <input
-            className="border-background-border bg-background rounded border p-2 text-sm"
+          <FormInput
+            className="rounded border p-2 text-sm"
             placeholder="Weeks"
             type="number"
             min={1}
@@ -79,13 +82,13 @@ export function CatalogTab({ model }: CatalogTabProps) {
             value={planForm.weeks}
             onChange={event => setPlanForm(current => ({ ...current, weeks: event.target.value }))}
           />
-          <button
+          <Button
             type="button"
             className="rounded bg-green-700 px-3 py-2 text-sm text-white transition-opacity hover:opacity-90"
-            onClick={() => void handleSavePlan()}
+            onPress={() => void handleSavePlan()}
           >
             Save Plan
-          </button>
+          </Button>
         </div>
 
         {plans.length > 0 ? (
@@ -106,13 +109,13 @@ export function CatalogTab({ model }: CatalogTabProps) {
                     <td className="px-2 py-2">{plan.label}</td>
                     <td className="px-2 py-2">{plan.weeks}</td>
                     <td className="px-2 py-2">
-                      <button
+                      <Button
                         type="button"
                         className="rounded bg-red-700 px-2 py-1 text-xs text-white transition-opacity hover:opacity-90"
-                        onClick={() => void handleDeletePlan(plan.value)}
+                        onPress={() => void handleDeletePlan(plan.value)}
                       >
                         Delete
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -120,37 +123,37 @@ export function CatalogTab({ model }: CatalogTabProps) {
             </table>
           </div>
         ) : (
-          <p className="text-foreground-dimmed2 mt-2 text-sm">No plans in catalog.</p>
+          <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">No plans in catalog.</Typography>
         )}
       </div>
 
       <div className="border-background-border bg-background rounded border p-4 shadow">
-        <h2 className="text-foreground-dimmed1 text-lg font-semibold">Catalog Preferences</h2>
+        <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Catalog Preferences</Typography>
 
         <div className="mt-3 grid gap-2">
-          <input
-            className="border-background-border bg-background rounded border p-2 text-sm"
+          <FormInput
+            className="rounded border p-2 text-sm"
             placeholder="Label"
             value={preferenceForm.label}
             onChange={event =>
               setPreferenceForm(current => ({ ...current, label: event.target.value }))
             }
           />
-          <input
-            className="border-background-border bg-background rounded border p-2 text-sm"
+          <FormInput
+            className="rounded border p-2 text-sm"
             placeholder="Description"
             value={preferenceForm.description}
             onChange={event =>
               setPreferenceForm(current => ({ ...current, description: event.target.value }))
             }
           />
-          <button
+          <Button
             type="button"
             className="rounded bg-green-700 px-3 py-2 text-sm text-white transition-opacity hover:opacity-90"
-            onClick={() => void handleSavePreference()}
+            onPress={() => void handleSavePreference()}
           >
             Save Preference
-          </button>
+          </Button>
         </div>
 
         {preferences.length > 0 ? (
@@ -169,13 +172,13 @@ export function CatalogTab({ model }: CatalogTabProps) {
                     <td className="px-2 py-2 font-medium">{preference.label}</td>
                     <td className="px-2 py-2">{preference.description}</td>
                     <td className="px-2 py-2">
-                      <button
+                      <Button
                         type="button"
                         className="rounded bg-red-700 px-2 py-1 text-xs text-white transition-opacity hover:opacity-90"
-                        onClick={() => void handleDeletePreference(preference.label)}
+                        onPress={() => void handleDeletePreference(preference.label)}
                       >
                         Delete
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -183,7 +186,7 @@ export function CatalogTab({ model }: CatalogTabProps) {
             </table>
           </div>
         ) : (
-          <p className="text-foreground-dimmed2 mt-2 text-sm">No preferences in catalog.</p>
+          <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">No preferences in catalog.</Typography>
         )}
       </div>
     </section>

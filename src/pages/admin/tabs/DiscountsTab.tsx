@@ -1,5 +1,10 @@
 import { type Dispatch, type SetStateAction } from "react";
+import clsx from "clsx";
+import { Button, Checkbox } from "react-aria-components";
 import { type DiscountType, type DiscountCodeRecord } from "../../../types/discount";
+import FormInput from "../../../components/FormInput";
+import FormSelect from "../../../components/FormSelect";
+import Typography from "../../../components/Typography";
 
 export type DiscountFormState = {
   code: string;
@@ -27,16 +32,16 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
 
   return (
     <section className="border-background-border bg-background rounded border p-4 shadow">
-      <h2 className="text-foreground-dimmed1 text-lg font-semibold">Discount Codes</h2>
+      <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Discount Codes</Typography>
       <div className="mt-3 grid gap-2 md:grid-cols-4">
-        <input
-          className="border-background-border bg-background rounded border p-2 text-sm"
+        <FormInput
+          className="rounded border p-2 text-sm"
           placeholder="Code"
           value={discountForm.code}
           onChange={e => setDiscountForm(prev => ({ ...prev, code: e.target.value }))}
         />
-        <input
-          className="border-background-border bg-background rounded border p-2 text-sm"
+        <FormInput
+          className="rounded border p-2 text-sm"
           placeholder="Amount"
           type="number"
           min={0}
@@ -44,8 +49,8 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           value={discountForm.amount}
           onChange={e => setDiscountForm(prev => ({ ...prev, amount: e.target.value }))}
         />
-        <select
-          className="border-background-border bg-background rounded border p-2 text-sm"
+        <FormSelect
+          className="rounded border p-2 text-sm"
           value={discountForm.type}
           onChange={e =>
             setDiscountForm(prev => ({ ...prev, type: e.target.value as DiscountType }))
@@ -53,9 +58,9 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
         >
           <option value="fixed">Fixed ($)</option>
           <option value="percent">Percent (%)</option>
-        </select>
-        <input
-          className="border-background-border bg-background rounded border p-2 text-sm"
+        </FormSelect>
+        <FormInput
+          className="rounded border p-2 text-sm"
           placeholder="Max uses (optional)"
           type="number"
           min={1}
@@ -63,8 +68,8 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           value={discountForm.maxUses}
           onChange={e => setDiscountForm(prev => ({ ...prev, maxUses: e.target.value }))}
         />
-        <input
-          className="border-background-border bg-background rounded border p-2 text-sm"
+        <FormInput
+          className="rounded border p-2 text-sm"
           placeholder="Min order total (optional)"
           type="number"
           min={0}
@@ -72,27 +77,41 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           value={discountForm.minOrderTotal}
           onChange={e => setDiscountForm(prev => ({ ...prev, minOrderTotal: e.target.value }))}
         />
-        <input
-          className="border-background-border bg-background rounded border p-2 text-sm"
+        <FormInput
+          className="rounded border p-2 text-sm"
           type="datetime-local"
           value={discountForm.expiresAt}
           onChange={e => setDiscountForm(prev => ({ ...prev, expiresAt: e.target.value }))}
         />
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={discountForm.isActive}
-            onChange={e => setDiscountForm(prev => ({ ...prev, isActive: e.target.checked }))}
-          />
-          Active
-        </label>
-        <button
+        <Checkbox
+          isSelected={discountForm.isActive}
+          onChange={isSelected => setDiscountForm(prev => ({ ...prev, isActive: isSelected }))}
+          className="flex items-center gap-2 text-sm"
+        >
+          {({ isSelected }) => (
+            <>
+              <div
+                aria-hidden="true"
+                className={clsx(
+                  "flex size-4 items-center justify-center rounded border text-[10px] font-bold transition-colors",
+                  isSelected
+                    ? "border-yellow-500 bg-yellow-500 text-black"
+                    : "border-background-border-dimmed1 bg-background-dimmed1"
+                )}
+              >
+                {isSelected ? "✓" : null}
+              </div>
+              <Typography as="span">Active</Typography>
+            </>
+          )}
+        </Checkbox>
+        <Button
           type="button"
           className="rounded bg-green-700 px-3 py-2 text-sm text-white transition-opacity hover:opacity-90"
-          onClick={() => void handleSaveDiscountCode()}
+          onPress={() => void handleSaveDiscountCode()}
         >
           Save Discount Code
-        </button>
+        </Button>
       </div>
 
       {discountCodes.length > 0 ? (
@@ -136,7 +155,7 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           </table>
         </div>
       ) : (
-        <p className="text-foreground-dimmed2 mt-2 text-sm">No discount codes created yet.</p>
+        <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">No discount codes created yet.</Typography>
       )}
     </section>
   );

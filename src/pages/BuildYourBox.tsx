@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import clsx from "clsx";
+import { Button, Checkbox } from "react-aria-components";
 import { useAuth } from "../hooks/useAuth";
+import BuildSectionCard from "../components/BuildSectionCard";
 import { type PreferenceOption, type SubscriptionPlanOption } from "../types/catalog";
 import {
   useCreateOrderMutation,
@@ -8,6 +11,10 @@ import {
   useUpdateUserSubscriptionMutation,
   useUserSubscriptionQuery,
 } from "../hooks/useCustomerQueries";
+import { type SubscriptionStatus } from "../types/subscription";
+import veggiesBgImage from "../assets/images/veggies-bg.webp";
+import Typography from "../components/Typography";
+import LeafLoader from "../components/LeafLoader";
 
 const WEEKLY_BOX_PRICES: Record<string, number> = {
   small: 15,
@@ -67,10 +74,29 @@ export default function BuildYourBox() {
   const [selectedPrefs, setSelectedPrefs] = useState<string[]>([]);
   const [isSubscriptionConfirmed, setIsSubscriptionConfirmed] = useState(false);
   const [confirmedAt, setConfirmedAt] = useState<string | null>(null);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
-  const [orderMessage, setOrderMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const [isBoxSizeOpen, setIsBoxSizeOpen] = useState(false);
+  const boxSizeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isBoxSizeOpen) return;
+    const onClickOutside = (e: MouseEvent) => {
+      if (boxSizeRef.current && !boxSizeRef.current.contains(e.target as Node)) {
+        setIsBoxSizeOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsBoxSizeOpen(false);
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isBoxSizeOpen]);
 
   useEffect(() => {
     if (!subscriptionData) {
@@ -102,8 +128,7 @@ export default function BuildYourBox() {
       setSelectedPlan(plan);
       setIsSubscriptionConfirmed(false);
       setConfirmedAt(null);
-      setConfirmationMessage("");
-      setOrderMessage("");
+      setSubmitMessage("");
       await updateSubscriptionMutation.mutateAsync({
         subscriptionPlan: plan,
         subscriptionStatus: "active",
@@ -122,8 +147,7 @@ export default function BuildYourBox() {
       setBoxSize(size);
       setIsSubscriptionConfirmed(false);
       setConfirmedAt(null);
-      setConfirmationMessage("");
-      setOrderMessage("");
+      setSubmitMessage("");
       await updateSubscriptionMutation.mutateAsync({
         boxSize: size,
         isSubscriptionConfirmed: false,
@@ -143,8 +167,7 @@ export default function BuildYourBox() {
       setSelectedPrefs(updatedPrefs);
       setIsSubscriptionConfirmed(false);
       setConfirmedAt(null);
-      setConfirmationMessage("");
-      setOrderMessage("");
+      setSubmitMessage("");
       await updateSubscriptionMutation.mutateAsync({
         preferences: updatedPrefs,
         isSubscriptionConfirmed: false,
@@ -162,173 +185,466 @@ export default function BuildYourBox() {
   const estimatedPlanTotal =
     estimatedWeeklyPrice && selectedPlanWeeks ? estimatedWeeklyPrice * selectedPlanWeeks : null;
 
-  const handleConfirmSubscription = async () => {
+  const handleSubscribeAndOrder = async () => {
     if (!user) return;
-    if (!selectedPlan || !boxSize || !estimatedWeeklyPrice || !selectedPlanWeeks) {
-      setConfirmationMessage("Select a plan and box size before confirming.");
-      return;
-    }
-
-    setIsConfirming(true);
-    setConfirmationMessage("");
-
-    const confirmedTimestamp = new Date().toISOString();
-    try {
-      await updateSubscriptionMutation.mutateAsync({
-        subscriptionStatus: "active",
-        statusUpdatedAt: confirmedTimestamp,
-        isSubscriptionConfirmed: true,
-        confirmedAt: confirmedTimestamp,
-      });
-      setIsSubscriptionConfirmed(true);
-      setConfirmedAt(confirmedTimestamp);
-      setConfirmationMessage("Subscription confirmed.");
-    } catch (error) {
-      console.error("Failed to confirm subscription:", error);
-      setConfirmationMessage("Unable to confirm subscription. Please try again.");
-    } finally {
-      setIsConfirming(false);
-    }
-  };
-
-  const handlePlaceOrder = async () => {
-    if (!user) return;
-
     if (
-      !isSubscriptionConfirmed ||
       !selectedPlan ||
       !boxSize ||
       !estimatedWeeklyPrice ||
       !selectedPlanWeeks ||
       !estimatedPlanTotal
     ) {
-      setOrderMessage("Confirm your subscription before placing an order.");
+      setSubmitMessage("Please select a plan and box size to continue.");
       return;
     }
 
-    setIsPlacingOrder(true);
-    setOrderMessage("");
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    const now = new Date().toISOString();
     try {
-      await createOrderMutation.mutateAsync({
-        subscriptionPlan: selectedPlan,
-        boxSize,
-        preferences: selectedPrefs,
-        estimatedWeeklyPrice,
-        planWeeks: selectedPlanWeeks,
-        estimatedPlanTotal,
-      });
-      setOrderMessage("Order placed successfully.");
+      if (hasConfirmedSubscription) {
+        // Existing subscriber: just update the subscription
+        await updateSubscriptionMutation.mutateAsync({
+          subscriptionPlan: selectedPlan,
+          boxSize,
+          preferences: selectedPrefs,
+          subscriptionStatus: "active",
+          statusUpdatedAt: now,
+        });
+        setSubmitMessage("Subscription updated. Changes apply to your next delivery.");
+      } else {
+        // New subscriber: update subscription + create first order
+        await updateSubscriptionMutation.mutateAsync({
+          subscriptionStatus: "active",
+          statusUpdatedAt: now,
+          isSubscriptionConfirmed: true,
+          confirmedAt: now,
+        });
+        setIsSubscriptionConfirmed(true);
+        setConfirmedAt(now);
+        await createOrderMutation.mutateAsync({
+          subscriptionPlan: selectedPlan,
+          boxSize,
+          preferences: selectedPrefs,
+          estimatedWeeklyPrice,
+          planWeeks: selectedPlanWeeks,
+          estimatedPlanTotal,
+        });
+        setSubmitMessage("You're all set! Your first box is on its way.");
+      }
     } catch (error) {
-      console.error("Failed to place order:", error);
-      setOrderMessage("Unable to place order. Please try again.");
+      console.error("Failed to update subscription:", error);
+      setSubmitMessage("Something went wrong. Please try again.");
     } finally {
-      setIsPlacingOrder(false);
+      setIsSubmitting(false);
     }
   };
 
-  if (isSubscriptionLoading) return <div className="p-4 text-gray-600">Loading...</div>;
+  const handleStatusChange = async (nextStatus: SubscriptionStatus) => {
+    if (!user) return;
+    setStatusMessage("");
+    try {
+      await updateSubscriptionMutation.mutateAsync({
+        subscriptionStatus: nextStatus,
+        statusUpdatedAt: new Date().toISOString(),
+      });
+      setStatusMessage(`Subscription ${nextStatus}.`);
+    } catch (error) {
+      console.error("Failed to update subscription status:", error);
+      setStatusMessage("Unable to update subscription status. Please try again.");
+    }
+  };
+
+  const currentStatus = subscriptionData?.subscriptionStatus ?? "active";
+  const isReady = !!selectedPlan && !!boxSize;
+  const planLabel = plans.find(p => p.value === selectedPlan)?.label ?? selectedPlan;
+  const hasConfirmedSubscription = !!subscriptionData?.isSubscriptionConfirmed;
+  const hasChanges =
+    hasConfirmedSubscription &&
+    (selectedPlan !== subscriptionData.subscriptionPlan ||
+      boxSize !== subscriptionData.boxSize ||
+      JSON.stringify(selectedPrefs) !== JSON.stringify(subscriptionData.preferences));
+
+  const incompleteSteps = [
+    !selectedPlan ? 1 : null,
+    !boxSize ? 2 : null,
+    selectedPrefs.length === 0 ? 3 : null,
+  ].filter((step): step is number => step !== null);
+
+  const stepsIncompleteText =
+    incompleteSteps.length === 0
+      ? "none of the steps"
+      : incompleteSteps.length === 1
+        ? `step ${incompleteSteps[0]}`
+        : incompleteSteps.length === 2
+          ? `steps ${incompleteSteps[0]} and ${incompleteSteps[1]}`
+          : "all steps";
+
+  if (isSubscriptionLoading) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <LeafLoader label="Loading subscription" />
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6 p-6">
-      <h2 className="text-primary text-2xl font-semibold">Build Your Box</h2>
+    <main className="text-foreground dark:text-secondary-foreground gap-appInnerSpacing flex flex-col py-[calc(var(--appSpacing)*2)]">
+      <div
+        className="mask-fade fixed top-0 left-0 z-0 h-screen w-full bg-cover bg-no-repeat"
+        style={{ backgroundImage: `url(${veggiesBgImage})` }}
+      />
 
-      {/* Subscription Plans */}
-      <section>
-        <h3 className="mb-2 text-xl font-semibold">Choose a Plan</h3>
-        <div className="grid gap-4 md:grid-cols-3">
-          {plans.map(({ label, value, description }) => (
-            <button
-              key={value}
-              onClick={() => handleSelectPlan(value)}
-              className={`rounded border p-4 text-left shadow transition hover:shadow-md ${
-                selectedPlan === value
-                  ? "bg-primary border-primary text-white"
-                  : "text-primary border-gray-300 bg-white"
-              }`}
-            >
-              <h4 className="text-lg font-semibold">{label}</h4>
-              <p className="text-sm opacity-80">{description}</p>
-            </button>
-          ))}
-        </div>
+      <section className="px-appSpacing relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-4 text-center">
+        <Typography as="h1" className="text-foreground text-4xl font-bold">
+          {hasConfirmedSubscription ? "Manage Your Box" : "Build Your Box"}
+        </Typography>
+        <Typography as="p" className="text-foreground-dimmed3 mx-auto max-w-2xl text-lg">
+          {hasConfirmedSubscription
+            ? "Update your preferences, plan, or box size. Changes apply to your next delivery."
+            : "Follow the four steps below to build your perfect weekly produce box."}
+        </Typography>
       </section>
 
-      {/* Box Size */}
-      <section>
-        <h3 className="mb-2 text-xl font-semibold">Select a Box Size</h3>
-        <select
-          className="focus:ring-primary w-full rounded border border-gray-300 p-2 shadow focus:ring-2 focus:outline-none"
-          value={boxSize}
-          onChange={e => handleBoxSizeChange(e.target.value)}
+      <section className="px-appSpacing gap-appInnerSpacing relative z-10 mx-auto flex w-full max-w-4xl flex-col">
+        {/* Plans */}
+        <BuildSectionCard
+          step="1"
+          isComplete={!!selectedPlan}
+          title="Choose a Plan"
+          description="Select how long you'd like your weekly deliveries to run."
         >
-          <option value="">Choose a size</option>
-          <option value="small">Small (3–4 items)</option>
-          <option value="medium">Medium (5–7 items)</option>
-          <option value="large">Large (8–10 items)</option>
-        </select>
-      </section>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {plans.map(({ label, value, description }) => (
+              <Button
+                key={value}
+                type="button"
+                onPress={() => handleSelectPlan(value)}
+                className={`flex cursor-pointer flex-col gap-1 rounded-xl border p-4 text-left transition-all duration-200 ${
+                  selectedPlan === value
+                    ? "border-yellow-500 bg-yellow-500/20 text-white"
+                    : "border-white/20 bg-white/10 text-white hover:bg-white/20"
+                }`}
+              >
+                <Typography as="h3" className="text-foreground text-lg font-semibold">
+                  {label}
+                </Typography>
+                <Typography as="p" className="text-foreground-dimmed3 text-sm">
+                  {description}
+                </Typography>
+              </Button>
+            ))}
+          </div>
+        </BuildSectionCard>
 
-      {/* Preferences */}
-      <section>
-        <h3 className="mb-2 text-xl font-semibold">Choose Your Preferences</h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {preferences.map(({ label, description }) => (
-            <label
-              key={label}
-              className="flex cursor-pointer gap-3 rounded border border-gray-300 bg-white p-3 shadow-sm hover:shadow-md"
+        {/* Box Size */}
+        <BuildSectionCard
+          step="2"
+          isComplete={!!boxSize}
+          title="Select a Box Size"
+          description="How much produce would you like each week?"
+          className="z-10" // Ensure this section is above the background image and dropdown
+        >
+          <div className="relative" ref={boxSizeRef}>
+            <Button
+              type="button"
+              onPress={() => setIsBoxSizeOpen(o => !o)}
+              aria-expanded={isBoxSizeOpen}
+              className="text-foreground flex w-full cursor-pointer items-center justify-between rounded-xl border border-white/20 bg-white/15 px-3 py-2 transition-all focus:border-yellow-500 focus:ring-yellow-500"
             >
-              <input
-                type="checkbox"
-                checked={selectedPrefs.includes(label)}
-                onChange={() => togglePref(label)}
-                className="accent-primary mt-1"
-              />
-              <div>
-                <div className="text-primary font-semibold">{label}</div>
-                <div className="text-sm text-gray-600">{description}</div>
+              <Typography as="span">
+                {boxSize === "small"
+                  ? "Small — 3 to 4 items"
+                  : boxSize === "medium"
+                    ? "Medium — 5 to 7 items"
+                    : boxSize === "large"
+                      ? "Large — 8 to 10 items"
+                      : "Choose a size"}
+              </Typography>
+              <Typography as="span" className="text-foreground-dimmed3 ml-2 text-xs">
+                {isBoxSizeOpen ? "▲" : "▼"}
+              </Typography>
+            </Button>
+
+            {isBoxSizeOpen && (
+              <div className="bg-background absolute top-full left-0 z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg">
+                <div className="flex flex-col gap-1 py-1">
+                  {[
+                    { value: "small", label: "Small — 3 to 4 items" },
+                    { value: "medium", label: "Medium — 5 to 7 items" },
+                    { value: "large", label: "Large — 8 to 10 items" },
+                  ].map(opt => (
+                    <Button
+                      key={opt.value}
+                      type="button"
+                      onPress={() => {
+                        handleBoxSizeChange(opt.value);
+                        setIsBoxSizeOpen(false);
+                      }}
+                      className={`flex items-center px-4 py-2 text-left text-white transition-all hover:bg-white/10 ${
+                        boxSize === opt.value ? "bg-yellow-500 font-medium hover:bg-yellow-500" : ""
+                      }`}
+                    >
+                      {opt.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </label>
-          ))}
-        </div>
-      </section>
+            )}
+          </div>
+        </BuildSectionCard>
 
-      <section className="border-background-border bg-background space-y-3 rounded border p-4 shadow">
-        <h3 className="text-xl font-semibold">Order Preview</h3>
-        <p className="text-foreground-dimmed2 text-sm">
-          Review estimated pricing and confirm your current subscription setup.
-        </p>
-        <div className="text-foreground-dimmed2 space-y-1 text-sm">
-          <p>
-            Weekly estimate: {estimatedWeeklyPrice ? `$${estimatedWeeklyPrice.toFixed(2)}` : "-"}
-          </p>
-          <p>Plan duration: {selectedPlanWeeks ? `${selectedPlanWeeks} weeks` : "-"}</p>
-          <p>Total estimate: {estimatedPlanTotal ? `$${estimatedPlanTotal.toFixed(2)}` : "-"}</p>
-          <p>Status: {isSubscriptionConfirmed ? "Confirmed" : "Pending confirmation"}</p>
-          {confirmedAt ? (
-            <p className="text-xxs">Confirmed {new Date(confirmedAt).toLocaleString()}</p>
+        {/* Preferences */}
+        <BuildSectionCard
+          step="3"
+          isComplete={selectedPrefs.length > 0}
+          title="Your Preferences"
+          description="Tell us what you enjoy so we can tailor your box. This step is optional."
+        >
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {preferences.map(({ label, description }) => (
+              <Checkbox
+                key={label}
+                isSelected={selectedPrefs.includes(label)}
+                onChange={() => togglePref(label)}
+                className={`flex cursor-pointer gap-3 rounded-xl border p-4 transition-all duration-200 ${
+                  selectedPrefs.includes(label)
+                    ? "border-yellow-500 bg-yellow-500/20"
+                    : "border-white/20 bg-white/10 hover:bg-white/20"
+                }`}
+              >
+                {({ isSelected }) => (
+                  <>
+                    <div
+                      aria-hidden="true"
+                      className={clsx(
+                        "mt-1 flex size-5 shrink-0 items-center justify-center rounded border text-xs font-bold transition-colors",
+                        isSelected
+                          ? "border-yellow-500 bg-yellow-500 text-white"
+                          : "border-white/20 bg-white/10"
+                      )}
+                    >
+                      {isSelected ? "✓" : null}
+                    </div>
+                    <div>
+                      <div className="text-foreground font-semibold">{label}</div>
+                      <div className="text-foreground-dimmed3 mt-0.5 text-sm">{description}</div>
+                    </div>
+                  </>
+                )}
+              </Checkbox>
+            ))}
+          </div>
+        </BuildSectionCard>
+
+        {/* Review & Subscribe */}
+        <BuildSectionCard
+          step="4"
+          isComplete={isReady}
+          title={
+            hasConfirmedSubscription
+              ? hasChanges
+                ? "Update Subscription"
+                : "Subscription Active"
+              : "Review & Subscribe"
+          }
+          description={
+            hasConfirmedSubscription && !hasChanges
+              ? "Your subscription is active and will continue on schedule."
+              : "Review your selections and confirm to continue."
+          }
+        >
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl bg-white/5 p-4 text-sm sm:grid-cols-3">
+            <div className="flex flex-col gap-0.5">
+              <Typography
+                as="p"
+                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
+              >
+                Plan
+              </Typography>
+              <Typography as="p" className="text-foreground font-medium">
+                {planLabel ?? "Not selected"}
+              </Typography>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <Typography
+                as="p"
+                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
+              >
+                Box Size
+              </Typography>
+              <Typography as="p" className="text-foreground font-medium capitalize">
+                {boxSize || "Not selected"}
+              </Typography>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <Typography
+                as="p"
+                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
+              >
+                Weekly Cost
+              </Typography>
+              <Typography as="p" className="text-foreground font-medium">
+                {estimatedWeeklyPrice ? `$${estimatedWeeklyPrice.toFixed(2)}` : "—"}
+              </Typography>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <Typography
+                as="p"
+                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
+              >
+                Duration
+              </Typography>
+              <Typography as="p" className="text-foreground font-medium">
+                {selectedPlanWeeks ? `${selectedPlanWeeks} weeks` : "—"}
+              </Typography>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <Typography
+                as="p"
+                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
+              >
+                Preferences
+              </Typography>
+              <Typography as="p" className="text-foreground font-medium">
+                {selectedPrefs.length > 0
+                  ? selectedPrefs.length <= 2
+                    ? selectedPrefs.join(", ")
+                    : `${selectedPrefs.slice(0, 2).join(", ")} +${selectedPrefs.length - 2} more`
+                  : "None selected"}
+              </Typography>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <Typography
+                as="p"
+                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
+              >
+                Estimated Total
+              </Typography>
+              <Typography as="p" className="text-foreground text-lg font-bold">
+                {estimatedPlanTotal ? `$${estimatedPlanTotal.toFixed(2)}` : "—"}
+              </Typography>
+            </div>
+          </div>
+
+          {!isReady && (
+            <Typography as="p" className="text-foreground-dimmed3 mb-appInnerSpacing text-sm">
+              Complete {stepsIncompleteText} above to continue.
+            </Typography>
+          )}
+
+          {hasConfirmedSubscription && !hasChanges ? (
+            <div className="flex gap-2 rounded-xl border border-green-500/20 bg-green-500/10 p-4">
+              <Typography
+                as="span"
+                className="bg-primary flex size-6 shrink-0 items-center justify-center rounded-full text-white"
+              >
+                ✓
+              </Typography>
+              <div className="flex flex-col gap-2">
+                <Typography as="p" className="text-sm font-medium text-green-100">
+                  Your subscription is set up and active. Adjustments below will apply to future
+                  deliveries.
+                </Typography>
+                {confirmedAt && isSubscriptionConfirmed ? (
+                  <Typography as="p" className="text-foreground-dimmed3 text-xs">
+                    Active since {new Date(confirmedAt).toLocaleString()}
+                  </Typography>
+                ) : null}
+              </div>
+            </div>
           ) : null}
-        </div>
-        <button
-          type="button"
-          onClick={handleConfirmSubscription}
-          disabled={isConfirming}
-          className="btn-primary disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {isConfirming ? "Confirming..." : "Confirm Subscription"}
-        </button>
-        <button
-          type="button"
-          onClick={handlePlaceOrder}
-          disabled={isPlacingOrder || !isSubscriptionConfirmed}
-          className="btn-secondary disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {isPlacingOrder ? "Placing Order..." : "Place Order"}
-        </button>
-        {confirmationMessage ? (
-          <p className="text-sm text-gray-600">{confirmationMessage}</p>
-        ) : null}
-        {orderMessage ? <p className="text-sm text-gray-600">{orderMessage}</p> : null}
+
+          {submitMessage ? (
+            <Typography as="p" className="text-foreground-dimmed3 text-sm">
+              {submitMessage}
+            </Typography>
+          ) : null}
+
+          <div className="w-full">
+            {hasConfirmedSubscription ? (
+              <>
+                <hr className="border-white/10" />
+                <div className="pt-appInnerSpacing flex flex-col">
+                  <Typography as="h3" className="text-foreground mb-1 text-lg font-semibold">
+                    Manage Subscription
+                  </Typography>
+                  <Typography as="p" className="text-foreground-dimmed3 mb-appInnerSpacing text-sm">
+                    Pause, resume, or cancel your deliveries at any time.
+                  </Typography>
+                </div>
+                <div className="mb-appInnerSpacing gap-appInnerSpacing flex w-full">
+                  {currentStatus === "active" ? (
+                    <Button
+                      type="button"
+                      onPress={() => handleStatusChange("paused")}
+                      isDisabled={updateSubscriptionMutation.isPending}
+                      className="btn-tertiary w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+                    >
+                      Pause Deliveries
+                    </Button>
+                  ) : null}
+                  {currentStatus === "paused" ? (
+                    <Button
+                      type="button"
+                      onPress={() => handleStatusChange("active")}
+                      isDisabled={updateSubscriptionMutation.isPending}
+                      className="btn-secondary w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+                    >
+                      Resume Deliveries
+                    </Button>
+                  ) : null}
+                  {currentStatus !== "canceled" ? (
+                    <Button
+                      type="button"
+                      onPress={() => handleStatusChange("canceled")}
+                      isDisabled={updateSubscriptionMutation.isPending}
+                      className="btn-destructive w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+                    >
+                      Cancel Subscription
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      onPress={() => handleStatusChange("active")}
+                      isDisabled={updateSubscriptionMutation.isPending}
+                      className="btn-secondary w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+                    >
+                      Reactivate Subscription
+                    </Button>
+                  )}
+                </div>
+              </>
+            ) : null}
+
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                onPress={handleSubscribeAndOrder}
+                isDisabled={isSubmitting || !isReady || (hasConfirmedSubscription && !hasChanges)}
+                className="btn-secondary whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+              >
+                {hasConfirmedSubscription
+                  ? hasChanges
+                    ? isSubmitting
+                      ? "Updating..."
+                      : "Update & Apply to Next Order"
+                    : "No Changes"
+                  : isSubmitting
+                    ? "Processing..."
+                    : "Start My Subscription"}
+              </Button>
+            </div>
+
+            {statusMessage ? (
+              <Typography as="p" className="text-foreground-dimmed3 mt-2 text-sm">
+                {statusMessage}
+              </Typography>
+            ) : null}
+          </div>
+        </BuildSectionCard>
       </section>
-    </div>
+    </main>
   );
 }

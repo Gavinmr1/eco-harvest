@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "react-aria-components";
 import { useAuth } from "../../hooks/useAuth";
+import FormInput from "../../components/FormInput";
+import Typography from "../../components/Typography";
 
 export default function Login() {
   const { login, refreshAdminStatus } = useAuth();
@@ -28,43 +31,42 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-md p-4">
-      <h2 className="mb-4 text-xl font-semibold">Login</h2>
-      {error ? <p className="mb-3 text-sm text-red-600">{error}</p> : null}
-      <input
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        placeholder="Email"
-        className="mb-3 block w-full rounded border p-2"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        placeholder="Password"
-        className="mb-4 block w-full rounded border p-2"
-        minLength={6}
-        required
-      />
-      <div className="flex gap-4">
-        <button
-          type="submit"
-          className="cursor-pointer rounded bg-green-600 px-4 py-2 text-white transition-all hover:bg-green-500 disabled:cursor-not-allowed disabled:opacity-70"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Logging in..." : "Login"}
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate("/signup")}
-          className="cursor-pointer rounded bg-gray-200 px-4 py-2 text-black transition-all hover:bg-gray-100"
-          disabled={isSubmitting}
-        >
-          Sign up
-        </button>
-      </div>
-    </form>
+    <div className="z-10 flex size-full grow flex-col items-center justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-card/10 p-appSpacing gap-appInnerSpacing mx-auto flex w-full max-w-md flex-col rounded-2xl shadow-md backdrop-blur-lg"
+      >
+        <Typography as="h2" className="mx-auto text-2xl font-semibold">Login</Typography>
+        {error ? <Typography as="p" className="text-sm text-red-600">{error}</Typography> : null}
+        <FormInput
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+        />
+        <FormInput
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Password"
+          minLength={6}
+          required
+        />
+        <div className="gap-appInnerSpacing flex">
+          <Button type="submit" className="btn-primary w-1/2" isDisabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Button>
+          <Button
+            type="button"
+            onPress={() => navigate("/signup")}
+            className="btn-secondary w-1/2"
+            isDisabled={isSubmitting}
+          >
+            Sign up
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

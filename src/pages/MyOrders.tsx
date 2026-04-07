@@ -1,6 +1,8 @@
 import { useAuth } from "../hooks/useAuth";
 import { type OrderRecord } from "../types/order";
 import { useUserOrdersQuery } from "../hooks/useCustomerQueries";
+import Typography from "../components/Typography";
+import LeafLoader from "../components/LeafLoader";
 
 export default function MyOrders() {
   const { user } = useAuth();
@@ -15,7 +17,11 @@ export default function MyOrders() {
   };
 
   if (isLoading) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center p-6">
+        <LeafLoader label="Loading orders" />
+      </div>
+    );
   }
 
   const getDiscountAmount = (order: OrderRecord) => {
@@ -32,9 +38,13 @@ export default function MyOrders() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 p-6">
-      <h1 className="text-primary text-2xl font-semibold">My Orders</h1>
+      <Typography as="h1" className="text-primary text-2xl font-semibold">
+        My Orders
+      </Typography>
       {orders.length === 0 ? (
-        <p className="text-foreground-dimmed2">You have no orders yet.</p>
+        <Typography as="p" className="text-foreground-dimmed2">
+          You have no orders yet.
+        </Typography>
       ) : (
         <div className="border-background-border bg-background overflow-x-auto rounded border p-4 shadow">
           <table className="min-w-full border-collapse text-left text-sm">
@@ -83,7 +93,11 @@ export default function MyOrders() {
           </table>
         </div>
       )}
-      {isError ? <p className="text-sm text-gray-600">Unable to load your orders.</p> : null}
+      {isError ? (
+        <Typography as="p" className="text-sm text-gray-600">
+          Unable to load your orders.
+        </Typography>
+      ) : null}
     </div>
   );
 }

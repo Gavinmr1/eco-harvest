@@ -2,10 +2,12 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 import AdminRoute from "./routes/AdminRoute";
+import LeafLoader from "./components/LeafLoader";
 
 const MainLayout = lazy(() => import("./layouts/MainLayout"));
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
+const FAQ = lazy(() => import("./pages/FAQ"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const SignUp = lazy(() => import("./pages/auth/SignUp"));
@@ -27,11 +29,18 @@ export default function App() {
   }, [darkMode]);
 
   return (
-    <Suspense fallback={<div className="p-4">Loading page...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-6">
+          <LeafLoader label="Loading page" />
+        </div>
+      }
+    >
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
+          <Route path="faq" element={<FAQ />} />
           <Route
             path="build-your-box"
             element={

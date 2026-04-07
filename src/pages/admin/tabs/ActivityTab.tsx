@@ -1,5 +1,7 @@
 import { type Dispatch, type SetStateAction } from "react";
 import { type OrderEventRecord } from "../../../types/orderEvent";
+import FormSelect from "../../../components/FormSelect";
+import Typography from "../../../components/Typography";
 
 export type ActivityTabModel = {
   activityFeedLimit: 10 | 30 | 50;
@@ -17,19 +19,19 @@ export function ActivityTab({ model }: ActivityTabProps) {
   return (
     <section className="border-background-border bg-background rounded border p-4 shadow">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-foreground-dimmed1 text-lg font-semibold">Recent Admin Activity</h2>
-        <select
-          className="border-background-border bg-background rounded border px-2 py-1.5 text-xs"
+        <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Recent Admin Activity</Typography>
+        <FormSelect
+          className="w-auto rounded border px-2 py-1.5 text-xs"
           value={activityFeedLimit}
           onChange={event => setActivityFeedLimit(Number(event.target.value) as 10 | 30 | 50)}
         >
           <option value={10}>Last 10 events</option>
           <option value={30}>Last 30 events</option>
           <option value={50}>Last 50 events</option>
-        </select>
+        </FormSelect>
       </div>
       {recentEvents.length === 0 ? (
-        <p className="text-foreground-dimmed2 mt-2 text-sm">No activity recorded yet.</p>
+        <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">No activity recorded yet.</Typography>
       ) : (
         <div className="mt-3 overflow-x-auto">
           <table className="min-w-full border-collapse text-left text-xs">
