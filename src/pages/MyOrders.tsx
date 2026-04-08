@@ -2,7 +2,7 @@ import { useAuth } from "../hooks/useAuth";
 import { type OrderRecord } from "../types/order";
 import { useUserOrdersQuery } from "../hooks/useCustomerQueries";
 import Typography from "../components/Typography";
-import LeafLoader from "../components/LeafLoader";
+import Loader from "../components/Loader";
 
 export default function MyOrders() {
   const { user } = useAuth();
@@ -19,7 +19,7 @@ export default function MyOrders() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-6">
-        <LeafLoader label="Loading orders" />
+        <Loader label="Loading orders" />
       </div>
     );
   }

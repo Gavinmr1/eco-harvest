@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 import AdminRoute from "./routes/AdminRoute";
-import LeafLoader from "./components/LeafLoader";
+import Loader from "./components/Loader";
 
 const MainLayout = lazy(() => import("./layouts/MainLayout"));
 const Home = lazy(() => import("./pages/Home"));
@@ -32,7 +32,7 @@ export default function App() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center p-6">
-          <LeafLoader label="Loading page" />
+          <Loader label="Loading page" />
         </div>
       }
     >

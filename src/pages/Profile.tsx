@@ -10,7 +10,7 @@ import { EMPTY_SUBSCRIPTION } from "../types/subscription";
 import veggiesBgImage from "../assets/images/veggies-bg.webp";
 import FormInput from "../components/FormInput";
 import Typography from "../components/Typography";
-import LeafLoader from "../components/LeafLoader";
+import Loader from "../components/Loader";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -59,7 +59,7 @@ export default function Profile() {
   const statusLabel = subscription.subscriptionStatus.replace(/^./, char => char.toUpperCase());
 
   if (!isLoading) {
-    return <LeafLoader label="Loading profile" variant="crate" />;
+    return <Loader label="Loading Profile..." variant="crate" />;
   }
 
   return (

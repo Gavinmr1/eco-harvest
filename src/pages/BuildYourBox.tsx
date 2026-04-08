@@ -14,7 +14,7 @@ import {
 import { type SubscriptionStatus } from "../types/subscription";
 import veggiesBgImage from "../assets/images/veggies-bg.webp";
 import Typography from "../components/Typography";
-import LeafLoader from "../components/LeafLoader";
+import Loader from "../components/Loader";
 
 const WEEKLY_BOX_PRICES: Record<string, number> = {
   small: 15,
@@ -284,7 +284,7 @@ export default function BuildYourBox() {
   if (isSubscriptionLoading) {
     return (
       <div className="flex items-center justify-center p-6">
-        <LeafLoader label="Loading subscription" />
+        <Loader label="Loading subscription" />
       </div>
     );
   }

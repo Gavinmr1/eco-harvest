@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useEffect, useState, type JSX } from "react";
 import { useAuth } from "../hooks/useAuth";
 import Typography from "../components/Typography";
-import LeafLoader from "../components/LeafLoader";
+import Loader from "../components/Loader";
 
 export default function AdminRoute({ children }: { children: JSX.Element }) {
   const { user, loading, adminLoading, isAdmin, refreshAdminStatus } = useAuth();
@@ -28,7 +28,7 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
   if (loading || adminLoading || forceRefreshingAdmin) {
     return (
       <div className="flex items-center justify-center p-6">
-        <LeafLoader label="Loading admin access" />
+        <Loader label="Loading admin access" />
       </div>
     );
   }

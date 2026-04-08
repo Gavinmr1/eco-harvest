@@ -34,7 +34,7 @@ import {
 import { exportQueueCsv, printQueue } from "./utils/orderQueueIO";
 import { getOrderQueueSummaryMetrics } from "./utils/orderQueueMetrics";
 import Typography from "../../components/Typography";
-import LeafLoader from "../../components/LeafLoader";
+import Loader from "../../components/Loader";
 import {
   getDiscountDraft,
   getRefundDraft,
@@ -764,7 +764,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-6">
-        <LeafLoader label="Loading admin dashboard" />
+        <Loader label="Loading admin dashboard" />
       </div>
     );
   }
