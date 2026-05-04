@@ -63,6 +63,7 @@ Required variables:
 Optional:
 
 - `VITE_FIREBASE_MEASUREMENT_ID`
+- `VITE_ADMIN_ALLOWLIST_EMAILS` (comma-separated emails for local admin access fallback, e.g. `admin@email.com`)
 
 ### Firestore catalog collections
 

@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Typography from "./Typography";
 import "./Loader.css";
 
 type LoaderProps = {
@@ -6,16 +7,25 @@ type LoaderProps = {
   size?: number;
   label?: string;
   variant?: "plant" | "crate";
+  active?: boolean;
 };
 
-const loaderClassName = (className?: string, variant?: LoaderProps["variant"]) =>
-  ["base-loader", variant ? `base-loader--${variant}` : "", className].filter(Boolean).join(" ");
+const loaderClassName = (className?: string, variant?: LoaderProps["variant"], active = true) =>
+  [
+    "base-loader",
+    variant ? `base-loader--${variant}` : "",
+    active ? "" : "base-loader--paused",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
 export default function Loader({
   className,
-  size = 132,
+  size = 200,
   label = "Loading",
   variant = "crate",
+  active = true,
 }: LoaderProps) {
   const style = {
     "--loader-size": `${size}px`,
@@ -24,7 +34,7 @@ export default function Loader({
   return (
     <div className="z-10 flex size-full grow items-center justify-center">
       <section
-        className={loaderClassName(className, variant)}
+        className={loaderClassName(className, variant, active)}
         style={style}
         role="status"
         aria-live="polite"
@@ -60,7 +70,9 @@ export default function Loader({
             <span className="base-loader__flap base-loader__face-right" />
           </div>
         </div>
-        <p className="base-loader__label">{label}</p>
+        <Typography as="p" className="base-loader__label">
+          {label}
+        </Typography>
       </section>
     </div>
   );

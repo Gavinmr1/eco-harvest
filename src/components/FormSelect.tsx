@@ -88,7 +88,9 @@ const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
           <SelectValue>
             {({ selectedText }) => selectedText ?? options[0]?.label ?? "Select an option"}
           </SelectValue>
-          <Typography as="span" className="text-foreground-dimmed3 ml-2 text-xs">▼</Typography>
+          <Typography as="span" variant="caption" className="ml-2">
+            ▼
+          </Typography>
         </Button>
         <Popover
           className="bg-background border-background-border z-50 mt-2 overflow-hidden rounded-2xl border shadow-lg"

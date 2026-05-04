@@ -54,17 +54,38 @@
   transform: translate(-50%, -50%) rotateX(58deg) rotateZ(45deg);
 }
 
+.base-loader__box-rear {
+  z-index: 12;
+}
+
+.base-loader__box-front {
+  z-index: 20;
+  pointer-events: none;
+}
+
 .base-loader__produce-showcase {
   position: absolute;
   inset: 0;
   pointer-events: none;
   isolation: isolate;
+  z-index: 16;
 }
 
 .base-loader__produce {
   position: absolute;
   display: block;
-  filter: drop-shadow(0 5px 4px rgb(0 0 0 / 0.22));
+  opacity: 0;
+  --land-rotate: 0deg;
+  --launch-offset: -22deg;
+  --start-x: -340%;
+  --start-y: 0%;
+  --apex-x: -95%;
+  --apex-y: -214%;
+  transform: translate(var(--start-x), var(--start-y))
+    rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  filter: drop-shadow(0 7px 8px rgb(0 0 0 / 0.32));
+  will-change: transform, opacity;
+  animation: produce-toss-1 6.2s linear infinite;
 }
 
 .base-loader__produce::before,
@@ -79,6 +100,11 @@
   z-index: 10;
   left: 50%;
   bottom: 27%;
+  --start-x: -360%;
+  --start-y: 0%;
+  --apex-x: -100%;
+  --apex-y: -360%;
+  animation-name: produce-toss-1;
   border-radius: 50% 46% 52% 48%;
   background:
     radial-gradient(circle at 30% 28%, rgb(255 255 255 / 0.42) 0 14%, transparent 16%),
@@ -102,6 +128,12 @@
   z-index: 9;
   left: 23%;
   bottom: 36%;
+  --launch-offset: 22deg;
+  --start-x: 340%;
+  --start-y: 0%;
+  --apex-x: 95%;
+  --apex-y: -226%;
+  animation-name: produce-toss-2;
   border-radius: 42% 42% 48% 48% / 44% 44% 56% 56%;
   background:
     radial-gradient(circle at 34% 30%, rgb(255 255 255 / 0.34) 0 13%, transparent 15%),
@@ -135,11 +167,16 @@
   z-index: 5;
   left: 16%;
   top: 38%;
+  --land-rotate: -90deg;
+  --start-x: -800%;
+  --start-y: 0%;
+  --apex-x: -220%;
+  --apex-y: -238%;
+  animation-name: produce-toss-3;
   border-radius: 100% 0 100% 0;
   background:
     linear-gradient(180deg, rgb(240 255 233 / 0.38), transparent 28%),
     linear-gradient(180deg, #a5e683 0%, #3f9252 100%);
-  transform: rotate(-90deg);
   box-shadow:
     0.14rem -0.15rem 0 0.02rem #7ac872,
     0.28rem -0.27rem 0 0.02rem #62b45c;
@@ -188,11 +225,17 @@
 .base-loader__produce--cucumber {
   width: calc(var(--loader-size) * 0.34);
   height: calc(var(--loader-size) * 0.1);
-  z-index: 3;
+  z-index: 0;
   left: 34%;
   top: 42%;
+  --land-rotate: 74deg;
+  --launch-offset: 22deg;
+  --start-x: 170%;
+  --start-y: 0%;
+  --apex-x: 70%;
+  --apex-y: -234%;
+  animation-name: produce-toss-4;
   border-radius: 999px;
-  transform: rotate(74deg);
   background:
     repeating-linear-gradient(
       180deg,
@@ -214,6 +257,11 @@
   z-index: 4;
   left: 30%;
   top: 40%;
+  --start-x: -320%;
+  --start-y: 0%;
+  --apex-x: -90%;
+  --apex-y: -222%;
+  animation-name: produce-toss-5;
   border-radius: 48% 52% 56% 44% / 42% 42% 58% 58%;
   background:
     radial-gradient(circle at 30% 26%, rgb(255 255 255 / 0.5) 0 14%, transparent 16%),
@@ -246,6 +294,12 @@
   z-index: 5;
   left: 40%;
   bottom: 32%;
+  --launch-offset: 22deg;
+  --start-x: 385%;
+  --start-y: 0%;
+  --apex-x: 107%;
+  --apex-y: -220%;
+  animation-name: produce-toss-6;
   border-radius: 42% 46% 44% 48% / 30% 28% 72% 70%;
   background:
     radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.32) 0 13%, transparent 15%),
@@ -267,6 +321,11 @@
   z-index: 4;
   left: 53%;
   bottom: 32%;
+  --start-x: -410%;
+  --start-y: 0%;
+  --apex-x: -115%;
+  --apex-y: -218%;
+  animation-name: produce-toss-7;
   border-radius: 44% 44% 54% 54% / 28% 28% 72% 72%;
   background:
     radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.3) 0 12%, transparent 14%),
@@ -298,7 +357,13 @@
   height: calc(var(--loader-size) * 0.1);
   left: 54%;
   bottom: 49%;
-  transform: rotate(8deg);
+  --land-rotate: 8deg;
+  --launch-offset: 22deg;
+  --start-x: 440%;
+  --start-y: 0%;
+  --apex-x: 123%;
+  --apex-y: -208%;
+  animation-name: produce-toss-8;
 }
 
 .base-loader__produce--potato-b {
@@ -306,15 +371,27 @@
   height: calc(var(--loader-size) * 0.095);
   left: 64%;
   bottom: 45%;
-  transform: rotate(-9deg);
+  --land-rotate: -9deg;
+  --start-x: -480%;
+  --start-y: 0%;
+  --apex-x: -135%;
+  --apex-y: -206%;
+  animation-name: produce-toss-9;
 }
 
 .base-loader__produce--potato-c {
   width: calc(var(--loader-size) * 0.11);
   height: calc(var(--loader-size) * 0.09);
+  z-index: 4;
   left: 66%;
   bottom: 40%;
-  transform: rotate(-3deg);
+  --land-rotate: -3deg;
+  --launch-offset: 22deg;
+  --start-x: 525%;
+  --start-y: 0%;
+  --apex-x: 148%;
+  --apex-y: -204%;
+  animation-name: produce-toss-10;
 }
 
 .base-loader__produce--potato-a::before,
@@ -462,6 +539,1015 @@
   --box-dark: #98663a;
 }
 
+.base-loader--paused .base-loader__visual,
+.base-loader--paused .base-loader__shadow,
+.base-loader--paused .base-loader__produce {
+  animation-play-state: paused;
+}
+
+@keyframes produce-toss-1 {
+  0%,
+  2% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  3% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  4.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  5.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  7% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  8.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  9.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  10.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  11.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  12.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  13.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  14.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  15.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  17.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  19%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-2 {
+  0%,
+  8% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  9% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  10.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  11.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  13% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  14.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  15.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  16.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  17.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  18.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  19.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  20.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  21.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  23.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  25%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-3 {
+  0%,
+  14% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  15% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  16.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  17.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  19% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  20.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  21.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  22.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  23.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  24.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  25.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  26.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  27.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  29.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  31%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-4 {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  21% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  22.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  23.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  25% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  26.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  27.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  28.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  29.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  30.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  31.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  32.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  33.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  35.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  37%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-5 {
+  0%,
+  26% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  27% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  28.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  29.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  31% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  32.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  33.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  34.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  35.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  36.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  37.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  38.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  39.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  41.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  43%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-6 {
+  0%,
+  32% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  33% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  34.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  35.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  37% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  38.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  39.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  40.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  41.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  42.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  43.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  44.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  45.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  47.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  49%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-7 {
+  0%,
+  38% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  39% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  40.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  41.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  43% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  44.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  45.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  46.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  47.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  48.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  49.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  50.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  51.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  53.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  55%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-8 {
+  0%,
+  44% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  45% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  46.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  47.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  49% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  50.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  51.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  52.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  53.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  54.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  55.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  56.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  57.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  59.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  61%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-9 {
+  0%,
+  50% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  51% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  52.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  53.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  55% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  56.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  57.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  58.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  59.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  60.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  61.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  62.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  63.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  65.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  67%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@keyframes produce-toss-10 {
+  0%,
+  56% {
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  57% {
+    opacity: 0.18;
+    transform: translate(var(--start-x), var(--start-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  58.2% {
+    opacity: 0.45;
+    transform: translate(
+        calc(var(--start-x) * 0.78 + var(--apex-x) * 0.22),
+        calc(var(--apex-y) * 0.4)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  59.6% {
+    opacity: 0.65;
+    transform: translate(
+        calc(var(--start-x) * 0.6 + var(--apex-x) * 0.4),
+        calc(var(--apex-y) * 0.62)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  61% {
+    opacity: 0.8;
+    transform: translate(
+        calc(var(--start-x) * 0.42 + var(--apex-x) * 0.58),
+        calc(var(--apex-y) * 0.78)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  62.4% {
+    opacity: 0.92;
+    transform: translate(
+        calc(var(--start-x) * 0.26 + var(--apex-x) * 0.74),
+        calc(var(--apex-y) * 0.89)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  63.6% {
+    opacity: 0.97;
+    transform: translate(
+        calc(var(--start-x) * 0.12 + var(--apex-x) * 0.88),
+        calc(var(--apex-y) * 0.96)
+      )
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  64.4% {
+    opacity: 1;
+    transform: translate(var(--apex-x), var(--apex-y))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  65.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.9), calc(var(--apex-y) * 0.96))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  66.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.76), calc(var(--apex-y) * 0.88))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  67.4% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.6), calc(var(--apex-y) * 0.76))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  68.6% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.42), calc(var(--apex-y) * 0.6))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  69.8% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.24), calc(var(--apex-y) * 0.4))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  71.2% {
+    opacity: 1;
+    transform: translate(calc(var(--apex-x) * 0.1), calc(var(--apex-y) * 0.2))
+      rotate(calc(var(--land-rotate) + var(--launch-offset)));
+  }
+  73%,
+  82% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .base-loader__visual,
+  .base-loader__shadow {
+    animation-duration: 2.8s;
+  }
+
+  .base-loader__produce {
+    animation: none;
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--land-rotate));
+  }
+}
+
 @keyframes base-loader-bob {
   0%,
   100% {
@@ -481,12 +1567,5 @@
   50% {
     transform: translateX(-50%) scale(1.06);
     opacity: 0.65;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .base-loader__visual,
-  .base-loader__shadow {
-    animation-duration: 2.8s;
   }
 }

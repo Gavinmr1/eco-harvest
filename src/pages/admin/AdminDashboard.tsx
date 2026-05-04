@@ -34,13 +34,27 @@ import {
 import { exportQueueCsv, printQueue } from "./utils/orderQueueIO";
 import { getOrderQueueSummaryMetrics } from "./utils/orderQueueMetrics";
 import Typography from "../../components/Typography";
-import Loader from "../../components/Loader";
+import PageHeader from "../../components/PageHeader";
 import {
   getDiscountDraft,
   getRefundDraft,
   getResetDiscountForm,
   getResetRefundDraft,
 } from "./utils/adminDrafts";
+import PageLoaderGate from "../../components/PageLoaderGate";
+
+const ADMIN_TABS = [
+  { key: "orders", label: "Orders" },
+  { key: "discounts", label: "Discounts" },
+  { key: "refunds", label: "Refunds" },
+  { key: "catalog", label: "Catalog" },
+  { key: "activity", label: "Activity" },
+] as const;
+
+const getTabClassName = (isActive: boolean) =>
+  `rounded-full px-4 py-2 text-sm transition-all ${
+    isActive ? "bg-yellow-500 font-medium text-foreground" : "text-foreground hover:bg-white/10"
+  }`;
 
 const ORDER_STATUSES: OrderStatus[] = [
   "new",
@@ -346,6 +360,14 @@ export default function AdminDashboard() {
     agingRequestedRefunds,
   } = getOrderQueueSummaryMetrics(orders, discountCodes, REFUND_SLA_DAYS);
 
+  const statCards = [
+    { label: "Orders", value: String(orders.length) },
+    { label: "Active discount codes", value: String(activeDiscountCodeCount) },
+    { label: "Refunds waiting for approval", value: String(pendingApprovalCount) },
+    { label: "Overdue refunds", value: String(slaBreachedCount) },
+    { label: "Gross order value", value: `$${totalGrossOrderValue.toFixed(2)}` },
+  ];
+
   const handleStatusChange = async (order: OrderRecord, status: OrderStatus) => {
     setMessage("");
     try {
@@ -541,7 +563,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeletePlan = async (planValue: string) => {
-    if (!window.confirm(`Delete catalog plan \"${planValue}\"?`)) {
+    if (!window.confirm(`Delete catalog plan "${planValue}"?`)) {
       return;
     }
 
@@ -577,7 +599,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeletePreference = async (label: string) => {
-    if (!window.confirm(`Delete catalog preference \"${label}\"?`)) {
+    if (!window.confirm(`Delete catalog preference "${label}"?`)) {
       return;
     }
 
@@ -762,133 +784,58 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-6">
-        <Loader label="Loading admin dashboard" />
-      </div>
-    );
+    return <PageLoaderGate label="Loading Admin Dashboard..." />;
   }
 
   const toastMeta = getToastMeta(message);
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-6">
-      <Typography as="h1" className="text-primary text-2xl font-semibold">
-        Admin Dashboard
-      </Typography>
-      <Typography as="p" className="text-foreground-dimmed2">
-        This area is reserved for operational workflows (order queue, subscription oversight, and
-        customer support actions).
-      </Typography>
+    <main className="text-foreground dark:text-secondary-foreground gap-appSpacing relative z-10 flex flex-col py-[calc(var(--appSpacing)*2)]">
+      <PageHeader
+        title="Admin Dashboard"
+        subtitle="Manage order operations, refunds, discount controls, and catalog updates from one place."
+        maxWidthClassName="max-w-6xl"
+        align="left"
+      />
 
-      <section className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <Typography as="p" className="text-foreground-dimmed2">
-            Orders
-          </Typography>
-          <Typography as="p" className="text-xl font-semibold">
-            {orders.length}
-          </Typography>
-        </div>
-        <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <Typography as="p" className="text-foreground-dimmed2">
-            Active discount codes
-          </Typography>
-          <Typography as="p" className="text-xl font-semibold">
-            {activeDiscountCodeCount}
-          </Typography>
-        </div>
-        <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <Typography as="p" className="text-foreground-dimmed2">
-            Refunds waiting for approval
-          </Typography>
-          <Typography as="p" className="text-xl font-semibold">
-            {pendingApprovalCount}
-          </Typography>
-        </div>
-        <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <Typography as="p" className="text-foreground-dimmed2">
-            Overdue refunds
-          </Typography>
-          <Typography as="p" className="text-xl font-semibold">
-            {slaBreachedCount}
-          </Typography>
-        </div>
-        <div className="bg-background border-background-border rounded border p-3 text-sm">
-          <Typography as="p" className="text-foreground-dimmed2">
-            Gross order value
-          </Typography>
-          <Typography as="p" className="text-xl font-semibold">
-            ${totalGrossOrderValue.toFixed(2)}
-          </Typography>
+      <section className="px-appSpacing relative z-10 mx-auto grid w-full max-w-6xl gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {statCards.map(card => (
+          <div
+            key={card.label}
+            className="border-background-border/20 flex flex-col gap-1 rounded-2xl border bg-white/10 p-5 shadow-md backdrop-blur-lg"
+          >
+            <Typography as="p" variant="caption" className="tracking-wide uppercase">
+              {card.label}
+            </Typography>
+            <Typography as="p" displayAs="h3">
+              {card.value}
+            </Typography>
+          </div>
+        ))}
+      </section>
+
+      <section className="px-appSpacing relative z-10 mx-auto w-full max-w-6xl">
+        <div className="border-background-border/20 flex w-full flex-wrap gap-1 rounded-2xl border bg-white/10 p-1 shadow-md backdrop-blur-lg">
+          {ADMIN_TABS.map(tab => (
+            <Button
+              key={tab.key}
+              type="button"
+              className={getTabClassName(activeTab === tab.key)}
+              onPress={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </Button>
+          ))}
         </div>
       </section>
 
-      <section className="border-background-border border-b">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            className={`text-foreground border-b px-4 py-2 text-sm ${
-              activeTab === "orders"
-                ? "border-green-500 text-green-700"
-                : "border-transparent text-white"
-            }`}
-            onPress={() => setActiveTab("orders")}
-          >
-            Orders
-          </Button>
-          <Button
-            type="button"
-            className={`text-foreground border-b px-4 py-2 text-sm ${
-              activeTab === "discounts"
-                ? "border-green-500 text-green-700"
-                : "border-transparent text-white"
-            }`}
-            onPress={() => setActiveTab("discounts")}
-          >
-            Discounts
-          </Button>
-          <Button
-            type="button"
-            className={`text-foreground border-b px-4 py-2 text-sm ${
-              activeTab === "refunds"
-                ? "border-green-500 text-green-700"
-                : "border-transparent text-white"
-            }`}
-            onPress={() => setActiveTab("refunds")}
-          >
-            Refunds
-          </Button>
-          <Button
-            type="button"
-            className={`text-foreground border-b px-4 py-2 text-sm ${
-              activeTab === "catalog"
-                ? "border-green-500 text-green-700"
-                : "border-transparent text-white"
-            }`}
-            onPress={() => setActiveTab("catalog")}
-          >
-            Catalog
-          </Button>
-          <Button
-            type="button"
-            className={`text-foreground border-b px-4 py-2 text-sm ${
-              activeTab === "activity"
-                ? "border-green-500 text-green-700"
-                : "border-transparent text-white"
-            }`}
-            onPress={() => setActiveTab("activity")}
-          >
-            Activity
-          </Button>
-        </div>
-      </section>
-
-      {activeTab === "refunds" ? <RefundsTab model={refundsTabModel} /> : null}
-      {activeTab === "discounts" ? <DiscountsTab model={discountsTabModel} /> : null}
-      {activeTab === "orders" ? <OrdersTab model={ordersTabModel} /> : null}
-      {activeTab === "catalog" ? <CatalogTab model={catalogTabModel} /> : null}
-      {activeTab === "activity" ? <ActivityTab model={activityTabModel} /> : null}
+      <div className="px-appSpacing relative z-10 mx-auto w-full max-w-6xl">
+        {activeTab === "refunds" ? <RefundsTab model={refundsTabModel} /> : null}
+        {activeTab === "discounts" ? <DiscountsTab model={discountsTabModel} /> : null}
+        {activeTab === "orders" ? <OrdersTab model={ordersTabModel} /> : null}
+        {activeTab === "catalog" ? <CatalogTab model={catalogTabModel} /> : null}
+        {activeTab === "activity" ? <ActivityTab model={activityTabModel} /> : null}
+      </div>
 
       {message ? (
         <div
@@ -904,13 +851,13 @@ export default function AdminDashboard() {
             <div className="flex items-start gap-2">
               <Typography
                 as="span"
-                className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${toastMeta.iconClass}`}
+                className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${toastMeta.iconClass}`}
                 aria-hidden="true"
               >
                 {toastMeta.icon}
               </Typography>
               <div className="min-w-0 flex-1">
-                <Typography as="p" className="text-xs font-semibold">
+                <Typography as="p" variant="label">
                   {toastMeta.label}
                 </Typography>
                 <Typography as="p" className="mt-0.5 break-words">
@@ -929,6 +876,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       ) : null}
-    </div>
+    </main>
   );
 }

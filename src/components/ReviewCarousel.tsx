@@ -68,11 +68,15 @@ const ReviewCarousel = () => {
   return (
     <Slider {...settings} className="[&_>_.slick-list_>_.slick-track]:py-4">
       {reviews.map((review, index) => (
-        <div key={index} className="flex h-40 px-2">
-          <div className="flex h-full w-fit cursor-pointer flex-col justify-between gap-2 rounded-2xl bg-white/10 bg-linear-to-b p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:shadow-lg">
+        <div key={index} className="flex min-h-40 px-2">
+          <div className="flex h-full w-fit cursor-pointer flex-col justify-between gap-2 rounded-2xl border border-white/10 bg-white/10 bg-linear-to-b p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:shadow-lg">
             <div className="flex w-70 flex-col gap-2">
-              <Typography as="h3" className="text-foreground text-lg font-semibold">{review.name}</Typography>
-              <Typography as="p" className="text-foreground-dimmed2 line-clamp-2">{review.review}</Typography>
+              <Typography as="h3" displayAs="h5">
+                {review.name}
+              </Typography>
+              <Typography as="p" variant="muted" className="line-clamp-2">
+                {review.review}
+              </Typography>
             </div>
             <div className="text-lg text-yellow-500">
               {"★".repeat(review.rating)}

@@ -12,9 +12,9 @@ import {
   useUserSubscriptionQuery,
 } from "../hooks/useCustomerQueries";
 import { type SubscriptionStatus } from "../types/subscription";
-import veggiesBgImage from "../assets/images/veggies-bg.webp";
+import PageHeader from "../components/PageHeader";
+import PageLoaderGate from "../components/PageLoaderGate";
 import Typography from "../components/Typography";
-import Loader from "../components/Loader";
 
 const WEEKLY_BOX_PRICES: Record<string, number> = {
   small: 15,
@@ -75,10 +75,13 @@ export default function BuildYourBox() {
   const [isSubscriptionConfirmed, setIsSubscriptionConfirmed] = useState(false);
   const [confirmedAt, setConfirmedAt] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
-  const [statusMessage, setStatusMessage] = useState("");
+  const [justSaved, setJustSaved] = useState(false);
+  const [justSubscribed, setJustSubscribed] = useState(false);
+  const [mutationError, setMutationError] = useState<string | null>(null);
   const [isBoxSizeOpen, setIsBoxSizeOpen] = useState(false);
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const boxSizeRef = useRef<HTMLDivElement>(null);
+  const actionsMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isBoxSizeOpen) return;
@@ -97,6 +100,28 @@ export default function BuildYourBox() {
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [isBoxSizeOpen]);
+
+  useEffect(() => {
+    if (!isActionsMenuOpen) return;
+
+    const onClickOutside = (e: MouseEvent) => {
+      if (actionsMenuRef.current && !actionsMenuRef.current.contains(e.target as Node)) {
+        setIsActionsMenuOpen(false);
+      }
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsActionsMenuOpen(false);
+    };
+
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isActionsMenuOpen]);
 
   useEffect(() => {
     if (!subscriptionData) {
@@ -126,9 +151,14 @@ export default function BuildYourBox() {
     if (!user) return;
     try {
       setSelectedPlan(plan);
-      setIsSubscriptionConfirmed(false);
-      setConfirmedAt(null);
-      setSubmitMessage("");
+      setJustSaved(false);
+      setJustSubscribed(false);
+      setMutationError(null);
+
+      if (hasConfirmedSubscription) {
+        return;
+      }
+
       await updateSubscriptionMutation.mutateAsync({
         subscriptionPlan: plan,
         subscriptionStatus: "active",
@@ -145,9 +175,14 @@ export default function BuildYourBox() {
     if (!user) return;
     try {
       setBoxSize(size);
-      setIsSubscriptionConfirmed(false);
-      setConfirmedAt(null);
-      setSubmitMessage("");
+      setJustSaved(false);
+      setJustSubscribed(false);
+      setMutationError(null);
+
+      if (hasConfirmedSubscription) {
+        return;
+      }
+
       await updateSubscriptionMutation.mutateAsync({
         boxSize: size,
         isSubscriptionConfirmed: false,
@@ -164,10 +199,16 @@ export default function BuildYourBox() {
       const updatedPrefs = selectedPrefs.includes(pref)
         ? selectedPrefs.filter(existingPref => existingPref !== pref)
         : [...selectedPrefs, pref];
+
       setSelectedPrefs(updatedPrefs);
-      setIsSubscriptionConfirmed(false);
-      setConfirmedAt(null);
-      setSubmitMessage("");
+      setJustSaved(false);
+      setJustSubscribed(false);
+      setMutationError(null);
+
+      if (hasConfirmedSubscription) {
+        return;
+      }
+
       await updateSubscriptionMutation.mutateAsync({
         preferences: updatedPrefs,
         isSubscriptionConfirmed: false,
@@ -194,12 +235,12 @@ export default function BuildYourBox() {
       !selectedPlanWeeks ||
       !estimatedPlanTotal
     ) {
-      setSubmitMessage("Please select a plan and box size to continue.");
       return;
     }
 
     setIsSubmitting(true);
-    setSubmitMessage("");
+    setJustSaved(false);
+    setMutationError(null);
 
     const now = new Date().toISOString();
     try {
@@ -212,7 +253,7 @@ export default function BuildYourBox() {
           subscriptionStatus: "active",
           statusUpdatedAt: now,
         });
-        setSubmitMessage("Subscription updated. Changes apply to your next delivery.");
+        setJustSaved(true);
       } else {
         // New subscriber: update subscription + create first order
         await updateSubscriptionMutation.mutateAsync({
@@ -231,11 +272,11 @@ export default function BuildYourBox() {
           planWeeks: selectedPlanWeeks,
           estimatedPlanTotal,
         });
-        setSubmitMessage("You're all set! Your first box is on its way.");
+        setJustSubscribed(true);
       }
     } catch (error) {
       console.error("Failed to update subscription:", error);
-      setSubmitMessage("Something went wrong. Please try again.");
+      setMutationError("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -243,16 +284,16 @@ export default function BuildYourBox() {
 
   const handleStatusChange = async (nextStatus: SubscriptionStatus) => {
     if (!user) return;
-    setStatusMessage("");
+    setMutationError(null);
+    setIsActionsMenuOpen(false);
     try {
       await updateSubscriptionMutation.mutateAsync({
         subscriptionStatus: nextStatus,
         statusUpdatedAt: new Date().toISOString(),
       });
-      setStatusMessage(`Subscription ${nextStatus}.`);
     } catch (error) {
       console.error("Failed to update subscription status:", error);
-      setStatusMessage("Unable to update subscription status. Please try again.");
+      setMutationError("Unable to update subscription status. Please try again.");
     }
   };
 
@@ -281,31 +322,83 @@ export default function BuildYourBox() {
           ? `steps ${incompleteSteps[0]} and ${incompleteSteps[1]}`
           : "all steps";
 
+  const primaryActionLabel = hasConfirmedSubscription
+    ? isSubmitting
+      ? "Saving..."
+      : "Save My Subscription"
+    : isSubmitting
+      ? "Processing..."
+      : "Start My Subscription";
+  const statusPillClass = mutationError
+    ? "border-red-500/30 bg-red-500/15 text-red-200"
+    : currentStatus === "active"
+      ? "border-green-500/30 bg-green-500/15 text-green-200"
+      : currentStatus === "paused"
+        ? "border-yellow-500/30 bg-yellow-500/15 text-yellow-200"
+        : "border-red-500/30 bg-red-500/15 text-red-200";
+  const subscriptionStateLabel = mutationError
+    ? "Error"
+    : currentStatus === "active"
+      ? "Active"
+      : currentStatus === "paused"
+        ? "Paused"
+        : "Canceled";
+  const subscriptionStateMessage = mutationError
+    ? mutationError
+    : justSubscribed
+      ? "You're all set — your first box is on its way."
+      : currentStatus === "active"
+        ? justSaved
+          ? "All saved. Your changes will apply to your next delivery."
+          : hasChanges
+            ? "You have unsaved changes. Save to apply them to your next delivery."
+            : "Your subscription is active and deliveries are on schedule."
+        : currentStatus === "paused"
+          ? "Deliveries are paused. Resume anytime from the menu."
+          : "Your subscription is canceled. Reactivate from the menu whenever you're ready.";
+  const statusCardClass = mutationError
+    ? "border-red-500/20 bg-red-500/10"
+    : hasChanges
+      ? "border-yellow-500/20 bg-yellow-500/10"
+      : justSaved || justSubscribed
+        ? "border-green-500/20 bg-green-500/10"
+        : "border-white/10 bg-white/5";
+
+  const subscriptionMenuActions =
+    currentStatus === "active"
+      ? [
+          { label: "Pause Deliveries", onPress: () => handleStatusChange("paused") },
+          {
+            label: "Cancel Subscription",
+            onPress: () => handleStatusChange("canceled"),
+            destructive: true,
+          },
+        ]
+      : currentStatus === "paused"
+        ? [
+            { label: "Resume Deliveries", onPress: () => handleStatusChange("active") },
+            {
+              label: "Cancel Subscription",
+              onPress: () => handleStatusChange("canceled"),
+              destructive: true,
+            },
+          ]
+        : [{ label: "Reactivate Subscription", onPress: () => handleStatusChange("active") }];
+
   if (isSubscriptionLoading) {
-    return (
-      <div className="flex items-center justify-center p-6">
-        <Loader label="Loading subscription" />
-      </div>
-    );
+    return <PageLoaderGate label="Loading Subscription..." />;
   }
 
   return (
-    <main className="text-foreground dark:text-secondary-foreground gap-appInnerSpacing flex flex-col py-[calc(var(--appSpacing)*2)]">
-      <div
-        className="mask-fade fixed top-0 left-0 z-0 h-screen w-full bg-cover bg-no-repeat"
-        style={{ backgroundImage: `url(${veggiesBgImage})` }}
-      />
-
-      <section className="px-appSpacing relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-4 text-center">
-        <Typography as="h1" className="text-foreground text-4xl font-bold">
-          {hasConfirmedSubscription ? "Manage Your Box" : "Build Your Box"}
-        </Typography>
-        <Typography as="p" className="text-foreground-dimmed3 mx-auto max-w-2xl text-lg">
-          {hasConfirmedSubscription
+    <main className="text-foreground dark:text-secondary-foreground gap-appSpacing z-10 flex flex-col py-[calc(var(--appSpacing)*2)]">
+      <PageHeader
+        title={hasConfirmedSubscription ? "Manage Your Box" : "Build Your Box"}
+        subtitle={
+          hasConfirmedSubscription
             ? "Update your preferences, plan, or box size. Changes apply to your next delivery."
-            : "Follow the four steps below to build your perfect weekly produce box."}
-        </Typography>
-      </section>
+            : "Follow the four steps below to build your perfect weekly produce box."
+        }
+      />
 
       <section className="px-appSpacing gap-appInnerSpacing relative z-10 mx-auto flex w-full max-w-4xl flex-col">
         {/* Plans */}
@@ -327,10 +420,10 @@ export default function BuildYourBox() {
                     : "border-white/20 bg-white/10 text-white hover:bg-white/20"
                 }`}
               >
-                <Typography as="h3" className="text-foreground text-lg font-semibold">
+                <Typography as="h3" displayAs="h5">
                   {label}
                 </Typography>
-                <Typography as="p" className="text-foreground-dimmed3 text-sm">
+                <Typography as="p" displayAs="body" variant="muted">
                   {description}
                 </Typography>
               </Button>
@@ -362,7 +455,7 @@ export default function BuildYourBox() {
                       ? "Large — 8 to 10 items"
                       : "Choose a size"}
               </Typography>
-              <Typography as="span" className="text-foreground-dimmed3 ml-2 text-xs">
+              <Typography as="span" variant="caption" className="ml-2">
                 {isBoxSizeOpen ? "▲" : "▼"}
               </Typography>
             </Button>
@@ -428,8 +521,10 @@ export default function BuildYourBox() {
                       {isSelected ? "✓" : null}
                     </div>
                     <div>
-                      <div className="text-foreground font-semibold">{label}</div>
-                      <div className="text-foreground-dimmed3 mt-0.5 text-sm">{description}</div>
+                      <Typography as="p">{label}</Typography>
+                      <Typography as="p" displayAs="body" variant="muted" className="mt-0.5">
+                        {description}
+                      </Typography>
                     </div>
                   </>
                 )}
@@ -457,57 +552,40 @@ export default function BuildYourBox() {
         >
           <div className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl bg-white/5 p-4 text-sm sm:grid-cols-3">
             <div className="flex flex-col gap-0.5">
-              <Typography
-                as="p"
-                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
-              >
+              <Typography as="p" variant="caption" className="tracking-wide uppercase">
                 Plan
               </Typography>
-              <Typography as="p" className="text-foreground font-medium">
-                {planLabel ?? "Not selected"}
-              </Typography>
+              <Typography as="p">{planLabel ?? "Not selected"}</Typography>
             </div>
             <div className="flex flex-col gap-0.5">
-              <Typography
-                as="p"
-                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
-              >
+              <Typography as="p" variant="caption" className="tracking-wide uppercase">
                 Box Size
               </Typography>
-              <Typography as="p" className="text-foreground font-medium capitalize">
+              <Typography as="p" className="capitalize">
                 {boxSize || "Not selected"}
               </Typography>
             </div>
             <div className="flex flex-col gap-0.5">
-              <Typography
-                as="p"
-                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
-              >
+              <Typography as="p" variant="caption" className="tracking-wide uppercase">
                 Weekly Cost
               </Typography>
-              <Typography as="p" className="text-foreground font-medium">
+              <Typography as="p">
                 {estimatedWeeklyPrice ? `$${estimatedWeeklyPrice.toFixed(2)}` : "—"}
               </Typography>
             </div>
             <div className="flex flex-col gap-0.5">
-              <Typography
-                as="p"
-                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
-              >
+              <Typography as="p" variant="caption" className="tracking-wide uppercase">
                 Duration
               </Typography>
-              <Typography as="p" className="text-foreground font-medium">
+              <Typography as="p">
                 {selectedPlanWeeks ? `${selectedPlanWeeks} weeks` : "—"}
               </Typography>
             </div>
             <div className="flex flex-col gap-0.5">
-              <Typography
-                as="p"
-                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
-              >
+              <Typography as="p" variant="caption" className="tracking-wide uppercase">
                 Preferences
               </Typography>
-              <Typography as="p" className="text-foreground font-medium">
+              <Typography as="p">
                 {selectedPrefs.length > 0
                   ? selectedPrefs.length <= 2
                     ? selectedPrefs.join(", ")
@@ -516,132 +594,120 @@ export default function BuildYourBox() {
               </Typography>
             </div>
             <div className="flex flex-col gap-0.5">
-              <Typography
-                as="p"
-                className="text-foreground-dimmed3 text-xs tracking-wide uppercase"
-              >
+              <Typography as="p" variant="caption" className="tracking-wide uppercase">
                 Estimated Total
               </Typography>
-              <Typography as="p" className="text-foreground text-lg font-bold">
+              <Typography as="p">
                 {estimatedPlanTotal ? `$${estimatedPlanTotal.toFixed(2)}` : "—"}
               </Typography>
             </div>
           </div>
 
           {!isReady && (
-            <Typography as="p" className="text-foreground-dimmed3 mb-appInnerSpacing text-sm">
+            <Typography as="p" variant="muted" className="mb-appInnerSpacing">
               Complete {stepsIncompleteText} above to continue.
             </Typography>
           )}
-
-          {hasConfirmedSubscription && !hasChanges ? (
-            <div className="flex gap-2 rounded-xl border border-green-500/20 bg-green-500/10 p-4">
-              <Typography
-                as="span"
-                className="bg-primary flex size-6 shrink-0 items-center justify-center rounded-full text-white"
-              >
-                ✓
-              </Typography>
-              <div className="flex flex-col gap-2">
-                <Typography as="p" className="text-sm font-medium text-green-100">
-                  Your subscription is set up and active. Adjustments below will apply to future
-                  deliveries.
-                </Typography>
-                {confirmedAt && isSubscriptionConfirmed ? (
-                  <Typography as="p" className="text-foreground-dimmed3 text-xs">
-                    Active since {new Date(confirmedAt).toLocaleString()}
-                  </Typography>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-
-          {submitMessage ? (
-            <Typography as="p" className="text-foreground-dimmed3 text-sm">
-              {submitMessage}
-            </Typography>
-          ) : null}
-
-          <div className="w-full">
+          <div className="gap-appInnerSpacing flex w-full flex-col">
             {hasConfirmedSubscription ? (
               <>
                 <hr className="border-white/10" />
-                <div className="pt-appInnerSpacing flex flex-col">
-                  <Typography as="h3" className="text-foreground mb-1 text-lg font-semibold">
-                    Manage Subscription
-                  </Typography>
-                  <Typography as="p" className="text-foreground-dimmed3 mb-appInnerSpacing text-sm">
-                    Pause, resume, or cancel your deliveries at any time.
-                  </Typography>
-                </div>
-                <div className="mb-appInnerSpacing gap-appInnerSpacing flex w-full">
-                  {currentStatus === "active" ? (
-                    <Button
-                      type="button"
-                      onPress={() => handleStatusChange("paused")}
-                      isDisabled={updateSubscriptionMutation.isPending}
-                      className="btn-tertiary w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+                <div className="gap-appInnerSpacing flex flex-col">
+                  <div className="flex flex-col gap-2">
+                    <Typography as="h2" displayAs="h4">
+                      Manage Subscription
+                    </Typography>
+
+                    <Typography as="p" variant="muted">
+                      Pause, resume, or cancel your deliveries at any time.
+                    </Typography>
+                  </div>
+                  <div className={clsx("flex gap-2 rounded-xl border p-3", statusCardClass)}>
+                    <div
+                      className={clsx(
+                        "flex size-6 shrink-0 items-center justify-center rounded-full border text-center text-xs text-white",
+                        statusPillClass
+                      )}
                     >
-                      Pause Deliveries
-                    </Button>
-                  ) : null}
-                  {currentStatus === "paused" ? (
-                    <Button
-                      type="button"
-                      onPress={() => handleStatusChange("active")}
-                      isDisabled={updateSubscriptionMutation.isPending}
-                      className="btn-secondary w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
-                    >
-                      Resume Deliveries
-                    </Button>
-                  ) : null}
-                  {currentStatus !== "canceled" ? (
-                    <Button
-                      type="button"
-                      onPress={() => handleStatusChange("canceled")}
-                      isDisabled={updateSubscriptionMutation.isPending}
-                      className="btn-destructive w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
-                    >
-                      Cancel Subscription
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onPress={() => handleStatusChange("active")}
-                      isDisabled={updateSubscriptionMutation.isPending}
-                      className="btn-secondary w-1/2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
-                    >
-                      Reactivate Subscription
-                    </Button>
-                  )}
+                      {mutationError
+                        ? "!"
+                        : currentStatus === "active"
+                          ? "✓"
+                          : currentStatus === "paused"
+                            ? "⏸"
+                            : "✕"}
+                    </div>
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <Typography as="p">Subscription Status</Typography>
+                        <span
+                          className={clsx(
+                            "rounded-full border px-2 py-0.5 text-xs font-medium tracking-wide uppercase",
+                            statusPillClass
+                          )}
+                        >
+                          {subscriptionStateLabel}
+                        </span>
+                      </div>
+                      <Typography as="p" variant="muted">
+                        {subscriptionStateMessage}
+                      </Typography>
+                      {confirmedAt && isSubscriptionConfirmed ? (
+                        <Typography as="p" variant="caption">
+                          Active since {new Date(confirmedAt).toLocaleString()}
+                        </Typography>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
               </>
             ) : null}
 
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                onPress={handleSubscribeAndOrder}
-                isDisabled={isSubmitting || !isReady || (hasConfirmedSubscription && !hasChanges)}
-                className="btn-secondary whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
-              >
-                {hasConfirmedSubscription
-                  ? hasChanges
-                    ? isSubmitting
-                      ? "Updating..."
-                      : "Update & Apply to Next Order"
-                    : "No Changes"
-                  : isSubmitting
-                    ? "Processing..."
-                    : "Start My Subscription"}
-              </Button>
-            </div>
+            <div className="gap-appInnerSpacing flex w-full flex-wrap items-center justify-between">
+              <div className="ml-auto flex items-center gap-2">
+                <Button
+                  type="button"
+                  onPress={handleSubscribeAndOrder}
+                  isDisabled={isSubmitting || !isReady || (hasConfirmedSubscription && !hasChanges)}
+                  className="btn-secondary ml-auto flex whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit"
+                >
+                  {primaryActionLabel}
+                </Button>
+                <div className="relative" ref={actionsMenuRef}>
+                  <Button
+                    type="button"
+                    onPress={() => setIsActionsMenuOpen(open => !open)}
+                    aria-expanded={isActionsMenuOpen}
+                    aria-haspopup="menu"
+                    className="hover:text-foreground-dimmed2 flex cursor-pointer items-center justify-center p-1 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                    isDisabled={updateSubscriptionMutation.isPending || isSubmitting}
+                  >
+                    <span className="text-xl leading-none">⋮</span>
+                  </Button>
 
-            {statusMessage ? (
-              <Typography as="p" className="text-foreground-dimmed3 mt-2 text-sm">
-                {statusMessage}
-              </Typography>
-            ) : null}
+                  {isActionsMenuOpen ? (
+                    <div className="bg-background absolute top-full right-0 z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
+                      <div className="flex flex-col gap-1 py-1">
+                        {subscriptionMenuActions.map(action => (
+                          <Button
+                            key={action.label}
+                            type="button"
+                            onPress={action.onPress}
+                            isDisabled={updateSubscriptionMutation.isPending}
+                            className={clsx(
+                              "cursor-pointer px-4 py-2 text-left transition-all hover:bg-white/10",
+                              action.destructive ? "text-red-400" : "text-white"
+                            )}
+                          >
+                            {action.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
           </div>
         </BuildSectionCard>
       </section>

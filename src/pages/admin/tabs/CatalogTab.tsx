@@ -49,24 +49,29 @@ export function CatalogTab({ model }: CatalogTabProps) {
 
   return (
     <section className="grid gap-4 lg:grid-cols-2">
-      <div className="border-background-border bg-background rounded border p-4 shadow">
-        <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Catalog Plans</Typography>
+      <div className="border-background-border/20 rounded-2xl border bg-white/10 p-6 shadow-md backdrop-blur-lg">
+        <div className="flex flex-col gap-1">
+          <Typography as="h2">Catalog Plans</Typography>
+          <Typography as="p" variant="muted">
+            Manage available subscription durations shown to customers.
+          </Typography>
+        </div>
 
-        <div className="mt-3 grid gap-2">
+        <div className="mt-4 grid gap-2">
           <FormInput
-            className="rounded border p-2 text-sm"
+            className="rounded-lg"
             placeholder="Value (e.g. 12-week)"
             value={planForm.value}
             onChange={event => setPlanForm(current => ({ ...current, value: event.target.value }))}
           />
           <FormInput
-            className="rounded border p-2 text-sm"
+            className="rounded-lg"
             placeholder="Label"
             value={planForm.label}
             onChange={event => setPlanForm(current => ({ ...current, label: event.target.value }))}
           />
           <FormInput
-            className="rounded border p-2 text-sm"
+            className="rounded-lg"
             placeholder="Description"
             value={planForm.description}
             onChange={event =>
@@ -74,7 +79,7 @@ export function CatalogTab({ model }: CatalogTabProps) {
             }
           />
           <FormInput
-            className="rounded border p-2 text-sm"
+            className="rounded-lg"
             placeholder="Weeks"
             type="number"
             min={1}
@@ -82,36 +87,56 @@ export function CatalogTab({ model }: CatalogTabProps) {
             value={planForm.weeks}
             onChange={event => setPlanForm(current => ({ ...current, weeks: event.target.value }))}
           />
-          <Button
-            type="button"
-            className="rounded bg-green-700 px-3 py-2 text-sm text-white transition-opacity hover:opacity-90"
-            onPress={() => void handleSavePlan()}
-          >
+          <Button type="button" className="btn-secondary" onPress={() => void handleSavePlan()}>
             Save Plan
           </Button>
         </div>
 
         {plans.length > 0 ? (
-          <div className="mt-3 overflow-x-auto">
-            <table className="min-w-full border-collapse text-left text-xs">
+          <div className="border-background-border/20 mt-4 overflow-x-auto rounded-2xl border bg-white/5">
+            <table className="min-w-full border-collapse text-left text-sm">
               <thead>
-                <tr className="text-foreground-dimmed1 border-background-border border-b">
-                  <th className="px-2 py-2">Value</th>
-                  <th className="px-2 py-2">Label</th>
-                  <th className="px-2 py-2">Weeks</th>
-                  <th className="px-2 py-2">Actions</th>
+                <tr className="text-foreground-dimmed1 border-b border-white/10 bg-white/5">
+                  <th className="px-3 py-3">
+                    <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                      Value
+                    </Typography>
+                  </th>
+                  <th className="px-3 py-3">
+                    <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                      Label
+                    </Typography>
+                  </th>
+                  <th className="px-3 py-3">
+                    <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                      Weeks
+                    </Typography>
+                  </th>
+                  <th className="px-3 py-3">
+                    <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                      Actions
+                    </Typography>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {plans.map(plan => (
-                  <tr key={plan.value} className="border-background-border border-b">
-                    <td className="px-2 py-2 font-medium">{plan.value}</td>
-                    <td className="px-2 py-2">{plan.label}</td>
-                    <td className="px-2 py-2">{plan.weeks}</td>
-                    <td className="px-2 py-2">
+                  <tr key={plan.value} className="border-b border-white/10 hover:bg-white/5">
+                    <td className="px-3 py-3 font-medium">
+                      <Typography as="span" className="font-mono text-xs">
+                        {plan.value}
+                      </Typography>
+                    </td>
+                    <td className="px-3 py-3">
+                      <Typography as="span">{plan.label}</Typography>
+                    </td>
+                    <td className="px-3 py-3">
+                      <Typography as="span">{plan.weeks}</Typography>
+                    </td>
+                    <td className="px-3 py-3">
                       <Button
                         type="button"
-                        className="rounded bg-red-700 px-2 py-1 text-xs text-white transition-opacity hover:opacity-90"
+                        className="btn-destructive px-3 py-1.5 text-xs"
                         onPress={() => void handleDeletePlan(plan.value)}
                       >
                         Delete
@@ -123,16 +148,23 @@ export function CatalogTab({ model }: CatalogTabProps) {
             </table>
           </div>
         ) : (
-          <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">No plans in catalog.</Typography>
+          <Typography as="p" variant="muted" className="mt-2">
+            No plans in catalog.
+          </Typography>
         )}
       </div>
 
-      <div className="border-background-border bg-background rounded border p-4 shadow">
-        <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Catalog Preferences</Typography>
+      <div className="border-background-border/20 rounded-2xl border bg-white/10 p-6 shadow-md backdrop-blur-lg">
+        <div className="flex flex-col gap-1">
+          <Typography as="h2">Catalog Preferences</Typography>
+          <Typography as="p" variant="muted">
+            Update preference options customers can choose in box setup.
+          </Typography>
+        </div>
 
-        <div className="mt-3 grid gap-2">
+        <div className="mt-4 grid gap-2">
           <FormInput
-            className="rounded border p-2 text-sm"
+            className="rounded-lg"
             placeholder="Label"
             value={preferenceForm.label}
             onChange={event =>
@@ -140,7 +172,7 @@ export function CatalogTab({ model }: CatalogTabProps) {
             }
           />
           <FormInput
-            className="rounded border p-2 text-sm"
+            className="rounded-lg"
             placeholder="Description"
             value={preferenceForm.description}
             onChange={event =>
@@ -149,7 +181,7 @@ export function CatalogTab({ model }: CatalogTabProps) {
           />
           <Button
             type="button"
-            className="rounded bg-green-700 px-3 py-2 text-sm text-white transition-opacity hover:opacity-90"
+            className="btn-secondary"
             onPress={() => void handleSavePreference()}
           >
             Save Preference
@@ -157,24 +189,40 @@ export function CatalogTab({ model }: CatalogTabProps) {
         </div>
 
         {preferences.length > 0 ? (
-          <div className="mt-3 overflow-x-auto">
-            <table className="min-w-full border-collapse text-left text-xs">
+          <div className="border-background-border/20 mt-4 overflow-x-auto rounded-2xl border bg-white/5">
+            <table className="min-w-full border-collapse text-left text-sm">
               <thead>
-                <tr className="text-foreground-dimmed1 border-background-border border-b">
-                  <th className="px-2 py-2">Label</th>
-                  <th className="px-2 py-2">Description</th>
-                  <th className="px-2 py-2">Actions</th>
+                <tr className="text-foreground-dimmed1 border-b border-white/10 bg-white/5">
+                  <th className="px-3 py-3">
+                    <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                      Label
+                    </Typography>
+                  </th>
+                  <th className="px-3 py-3">
+                    <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                      Description
+                    </Typography>
+                  </th>
+                  <th className="px-3 py-3">
+                    <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                      Actions
+                    </Typography>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {preferences.map(preference => (
-                  <tr key={preference.label} className="border-background-border border-b">
-                    <td className="px-2 py-2 font-medium">{preference.label}</td>
-                    <td className="px-2 py-2">{preference.description}</td>
-                    <td className="px-2 py-2">
+                  <tr key={preference.label} className="border-b border-white/10 hover:bg-white/5">
+                    <td className="px-3 py-3 font-medium">
+                      <Typography as="span">{preference.label}</Typography>
+                    </td>
+                    <td className="px-3 py-3">
+                      <Typography as="span">{preference.description}</Typography>
+                    </td>
+                    <td className="px-3 py-3">
                       <Button
                         type="button"
-                        className="rounded bg-red-700 px-2 py-1 text-xs text-white transition-opacity hover:opacity-90"
+                        className="btn-destructive px-3 py-1.5 text-xs"
                         onPress={() => void handleDeletePreference(preference.label)}
                       >
                         Delete
@@ -186,7 +234,9 @@ export function CatalogTab({ model }: CatalogTabProps) {
             </table>
           </div>
         ) : (
-          <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">No preferences in catalog.</Typography>
+          <Typography as="p" variant="muted" className="mt-2">
+            No preferences in catalog.
+          </Typography>
         )}
       </div>
     </section>

@@ -29,10 +29,11 @@ export default function BuildSectionCard({
       )}
     >
       <div className={clsx("flex flex-col gap-2", headerClassName)}>
-        <Typography as="h2" className="text-foreground flex items-center gap-3 text-2xl font-semibold">
-          <Typography as="span"
+        <Typography as="h2" displayAs="h4" className="flex items-center gap-3">
+          <Typography
+            as="p"
             className={clsx(
-              "inline-flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-bold",
+              "inline-flex size-7 shrink-0 items-center justify-center rounded-full",
               isComplete ? "bg-green-500" : "bg-white/20"
             )}
           >
@@ -40,7 +41,9 @@ export default function BuildSectionCard({
           </Typography>
           {title}
         </Typography>
-        <Typography as="p" className="text-foreground-dimmed3 text-base">{description}</Typography>
+        <Typography as="p" displayAs="body" variant="muted">
+          {description}
+        </Typography>
       </div>
       {children}
     </div>

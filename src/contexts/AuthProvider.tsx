@@ -10,6 +10,16 @@ import {
 import { auth } from "../lib/firebase";
 import { AuthContext } from "./AuthContext";
 
+const ADMIN_ALLOWLIST_EMAILS = new Set(
+  (import.meta.env.VITE_ADMIN_ALLOWLIST_EMAILS ?? "")
+    .split(",")
+    .map(email => email.trim().toLowerCase())
+    .filter(Boolean)
+);
+
+const isAllowlistedAdmin = (email?: string | null) =>
+  email ? ADMIN_ALLOWLIST_EMAILS.has(email.trim().toLowerCase()) : false;
+
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -26,14 +36,17 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     }
 
     setAdminLoading(true);
+    const hasAllowlistAdmin = isAllowlistedAdmin(firebaseUser.email);
+
     try {
       const tokenResult = await firebaseUser.getIdTokenResult(force);
       const hasAdminClaim = Boolean(tokenResult.claims.admin);
-      setIsAdmin(hasAdminClaim);
-      return hasAdminClaim;
+      const hasAdminAccess = hasAdminClaim || hasAllowlistAdmin;
+      setIsAdmin(hasAdminAccess);
+      return hasAdminAccess;
     } catch {
-      setIsAdmin(false);
-      return false;
+      setIsAdmin(hasAllowlistAdmin);
+      return hasAllowlistAdmin;
     } finally {
       setAdminLoading(false);
     }

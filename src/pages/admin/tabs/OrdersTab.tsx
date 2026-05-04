@@ -184,14 +184,17 @@ export function OrdersTab({ model }: OrdersTabProps) {
   };
 
   return (
-    <section className="border-background-border bg-background rounded border p-4 shadow">
-      <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">
-        Orders Queue
-      </Typography>
-      <div className="mt-3 flex items-start justify-between gap-2">
+    <section className="border-background-border/20 rounded-2xl border bg-white/10 p-6 shadow-md backdrop-blur-lg">
+      <div className="flex flex-col gap-1">
+        <Typography as="h2">Orders Queue</Typography>
+        <Typography as="p" variant="muted">
+          Review fulfillment status, apply adjustments, and handle refunds.
+        </Typography>
+      </div>
+      <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           <FormSelect
-            className="w-auto rounded border px-2 py-1.5 text-xs"
+            className="w-auto min-w-[10rem]"
             value={queueView}
             onChange={event => setQueueView(event.target.value as "all" | "sla-priority")}
           >
@@ -199,7 +202,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
             <option value="sla-priority">Urgent refunds only</option>
           </FormSelect>
           <FormSelect
-            className="w-auto rounded border px-2 py-1.5 text-xs"
+            className="w-auto min-w-[9rem]"
             value={queueRowLimit}
             onChange={event => setQueueRowLimit(Number(event.target.value) as 25 | 50 | 100)}
           >
@@ -210,7 +213,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
           {queueSort ? (
             <Typography
               as="span"
-              className="border-background-border bg-background-dimmed1 text-foreground-dimmed2 rounded border px-2 py-1 text-xs"
+              className="border-background-border/30 bg-background/70 inline-flex items-center rounded-full border px-3 py-1.5"
             >
               Sorted by {getQueueSortLabel(queueSort.key)}{" "}
               {queueSort.direction === "asc" ? "↑" : "↓"}
@@ -222,7 +225,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
           <div className="relative">
             <Button
               type="button"
-              className="border-background-border bg-background hover:bg-background-dimmed1 rounded border p-2 transition-colors"
+              className="border-background-border/30 bg-background/70 hover:bg-background-dimmed1 rounded-xl border p-2 transition-colors"
               aria-label="Open export options"
               onPress={() => {
                 setIsExportMenuOpen(current => !current);
@@ -233,10 +236,10 @@ export function OrdersTab({ model }: OrdersTabProps) {
             </Button>
 
             {isExportMenuOpen ? (
-              <div className="bg-background border-background-border absolute top-10 right-0 z-30 flex w-44 flex-col gap-1 rounded border p-2 shadow">
+              <div className="bg-background border-background-border/30 absolute top-11 right-0 z-30 flex w-44 flex-col gap-1 rounded-xl border p-2 shadow-lg backdrop-blur-lg">
                 <Button
                   type="button"
-                  className="hover:bg-background-dimmed1 rounded px-2 py-1 text-left text-xs"
+                  className="hover:bg-background-dimmed1 rounded-lg px-2 py-1.5 text-left text-xs transition-colors"
                   onPress={() => {
                     handleExportQueueCsv();
                     setIsExportMenuOpen(false);
@@ -246,7 +249,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                 </Button>
                 <Button
                   type="button"
-                  className="hover:bg-background-dimmed1 rounded px-2 py-1 text-left text-xs"
+                  className="hover:bg-background-dimmed1 rounded-lg px-2 py-1.5 text-left text-xs transition-colors"
                   onPress={() => {
                     handleExportFullQueueCsv();
                     setIsExportMenuOpen(false);
@@ -261,7 +264,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
           <div className="relative">
             <Button
               type="button"
-              className="border-background-border bg-background hover:bg-background-dimmed1 rounded border p-2 transition-colors"
+              className="border-background-border/30 bg-background/70 hover:bg-background-dimmed1 rounded-xl border p-2 transition-colors"
               aria-label="Open print options"
               onPress={() => {
                 setIsPrintMenuOpen(current => !current);
@@ -272,10 +275,10 @@ export function OrdersTab({ model }: OrdersTabProps) {
             </Button>
 
             {isPrintMenuOpen ? (
-              <div className="bg-background border-background-border absolute top-10 right-0 z-30 flex w-44 flex-col gap-1 rounded border p-2 shadow">
+              <div className="bg-background border-background-border/30 absolute top-11 right-0 z-30 flex w-44 flex-col gap-1 rounded-xl border p-2 shadow-lg backdrop-blur-lg">
                 <Button
                   type="button"
-                  className="hover:bg-background-dimmed1 rounded px-2 py-1 text-left text-xs"
+                  className="hover:bg-background-dimmed1 rounded-lg px-2 py-1.5 text-left text-xs transition-colors"
                   onPress={() => {
                     handlePrintQueue();
                     setIsPrintMenuOpen(false);
@@ -285,7 +288,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                 </Button>
                 <Button
                   type="button"
-                  className="hover:bg-background-dimmed1 rounded px-2 py-1 text-left text-xs"
+                  className="hover:bg-background-dimmed1 rounded-lg px-2 py-1.5 text-left text-xs transition-colors"
                   onPress={() => {
                     handlePrintFullQueue();
                     setIsPrintMenuOpen(false);
@@ -299,53 +302,65 @@ export function OrdersTab({ model }: OrdersTabProps) {
         </div>
       </div>
       {limitedDisplayedOrders.length === 0 ? (
-        <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">
+        <Typography as="p" variant="muted" className="mt-2">
           No orders yet.
         </Typography>
       ) : (
-        <div className="mt-3 overflow-x-auto">
+        <div className="border-background-border/20 mt-4 overflow-x-auto rounded-2xl border bg-white/5">
           <table className="min-w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="text-foreground-dimmed1 border-background-border border-b">
-                <th className="px-2 py-2">
+              <tr className="text-foreground-dimmed1 border-b border-white/10 bg-white/5">
+                <th className="px-3 py-3">
                   <Button
                     type="button"
-                    className="text-foreground-dimmed1 hover:text-foreground font-semibold whitespace-nowrap transition-colors"
+                    className="text-foreground-dimmed1 hover:text-foreground text-xs font-semibold tracking-wide whitespace-nowrap uppercase transition-colors"
                     onPress={() => handleQueueSortChange("order")}
                   >
                     Order{getQueueSortIndicator(queueSort, "order")}
                   </Button>
                 </th>
-                <th className="px-2 py-2">
+                <th className="px-3 py-3">
                   <Button
                     type="button"
-                    className="text-foreground-dimmed1 hover:text-foreground font-semibold whitespace-nowrap transition-colors"
+                    className="text-foreground-dimmed1 hover:text-foreground text-xs font-semibold tracking-wide whitespace-nowrap uppercase transition-colors"
                     onPress={() => handleQueueSortChange("user")}
                   >
                     User{getQueueSortIndicator(queueSort, "user")}
                   </Button>
                 </th>
-                <th className="px-2 py-2">
+                <th className="px-3 py-3">
                   <Button
                     type="button"
-                    className="text-foreground-dimmed1 hover:text-foreground font-semibold whitespace-nowrap transition-colors"
+                    className="text-foreground-dimmed1 hover:text-foreground text-xs font-semibold tracking-wide whitespace-nowrap uppercase transition-colors"
                     onPress={() => handleQueueSortChange("plan")}
                   >
                     Plan{getQueueSortIndicator(queueSort, "plan")}
                   </Button>
                 </th>
-                <th className="px-2 py-2 font-semibold">Net total</th>
-                <th className="px-2 py-2">
+                <th className="px-3 py-3 font-semibold">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Net total
+                  </Typography>
+                </th>
+                <th className="px-3 py-3">
                   <Button
                     type="button"
-                    className="text-foreground-dimmed1 hover:text-foreground font-semibold whitespace-nowrap transition-colors"
+                    className="text-foreground-dimmed1 hover:text-foreground text-xs font-semibold tracking-wide whitespace-nowrap uppercase transition-colors"
                     onPress={() => handleQueueSortChange("status")}
                   >
                     Status{getQueueSortIndicator(queueSort, "status")}
                   </Button>
                 </th>
-                <th className="px-2 py-2 font-semibold">Action required</th>
-                <th className="px-2 py-2">Operations</th>
+                <th className="px-3 py-3 font-semibold">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Action required
+                  </Typography>
+                </th>
+                <th className="px-3 py-3">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Operations
+                  </Typography>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -362,31 +377,35 @@ export function OrdersTab({ model }: OrdersTabProps) {
 
                 return (
                   <Fragment key={order.id}>
-                    <tr className="border-background-border border-b align-top">
-                      <td className="px-2 py-2">
-                        <div className="font-medium">{order.id.slice(0, 8)}</div>
+                    <tr className="border-b border-white/10 align-top hover:bg-white/5">
+                      <td className="px-3 py-3">
+                        <div className="font-mono text-xs font-medium">
+                          {order.id.slice(0, 8).toUpperCase()}
+                        </div>
                         <div className="text-xxs text-foreground-dimmed3">
                           {new Date(order.createdAt).toLocaleString()}
                         </div>
                       </td>
-                      <td className="px-2 py-2">{order.userId.slice(0, 8)}</td>
-                      <td className="px-2 py-2">{order.subscriptionPlan}</td>
-                      <td className="px-2 py-2 font-medium">${netTotal.toFixed(2)}</td>
-                      <td className="px-2 py-2">
-                        <div>{order.status}</div>
+                      <td className="px-3 py-3 font-mono text-xs">{order.userId.slice(0, 8)}</td>
+                      <td className="px-3 py-3">{order.subscriptionPlan}</td>
+                      <td className="px-3 py-3 font-medium">${netTotal.toFixed(2)}</td>
+                      <td className="px-3 py-3">
+                        <Typography as="span" className="capitalize">
+                          {order.status.replace(/-/g, " ")}
+                        </Typography>
                       </td>
-                      <td className="px-2 py-2">
+                      <td className="px-3 py-3">
                         <Typography
                           as="span"
-                          className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${getActionRequiredBadgeClass(actionRequiredStatus)}`}
+                          className={`inline-flex rounded-full border px-2 py-0.5 ${getActionRequiredBadgeClass(actionRequiredStatus)}`}
                         >
                           {actionRequiredStatus}
                         </Typography>
                       </td>
-                      <td className="relative px-2 py-2">
+                      <td className="relative px-3 py-3">
                         <Button
                           type="button"
-                          className="border-background-border rounded border px-2 py-1 text-xs"
+                          className="border-background-border/30 hover:bg-background/70 rounded-lg border px-2 py-1 text-xs transition-colors"
                           onPress={() =>
                             setOpenMenuOrderId(currentId =>
                               currentId === order.id ? null : order.id
@@ -396,10 +415,10 @@ export function OrdersTab({ model }: OrdersTabProps) {
                           ...
                         </Button>
                         {isMenuOpen ? (
-                          <div className="bg-background border-background-border absolute top-10 right-2 z-20 flex w-44 flex-col gap-1 rounded border p-2 shadow">
+                          <div className="bg-background border-background-border/30 absolute top-10 right-2 z-20 flex w-44 flex-col gap-1 rounded-xl border p-2 shadow-lg backdrop-blur-lg">
                             <Button
                               type="button"
-                              className="hover:bg-background-dimmed1 rounded px-2 py-1 text-left text-xs"
+                              className="hover:bg-background-dimmed1 rounded-lg px-2 py-1.5 text-left text-xs transition-colors"
                               onPress={() => {
                                 setExpandedOrderId(currentId =>
                                   currentId === order.id ? null : order.id
@@ -411,7 +430,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                             </Button>
                             <Button
                               type="button"
-                              className="hover:bg-background-dimmed1 rounded px-2 py-1 text-left text-xs"
+                              className="hover:bg-background-dimmed1 rounded-lg px-2 py-1.5 text-left text-xs transition-colors"
                               onPress={() => {
                                 void handleQuickApproveOldestRefund(order);
                                 setOpenMenuOrderId(null);
@@ -421,7 +440,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                             </Button>
                             <Button
                               type="button"
-                              className="hover:bg-background-dimmed1 rounded px-2 py-1 text-left text-xs"
+                              className="hover:bg-background-dimmed1 rounded-lg px-2 py-1.5 text-left text-xs transition-colors"
                               onPress={() => {
                                 void handleQuickProcessOldestRefund(order);
                                 setOpenMenuOrderId(null);
@@ -435,38 +454,35 @@ export function OrdersTab({ model }: OrdersTabProps) {
                     </tr>
 
                     {isExpanded ? (
-                      <tr className="border-background-border border-b">
-                        <td colSpan={7} className="bg-background-dimmed1 px-3 py-3">
+                      <tr className="border-background-border/20 border-b">
+                        <td colSpan={7} className="bg-white/5 px-3 py-3">
                           <div className="space-y-3">
                             <div className="grid gap-3 lg:grid-cols-2">
-                              <div className="border-background-border bg-background rounded border p-3">
-                                <Typography
-                                  as="p"
-                                  className="text-foreground-dimmed2 text-xs font-semibold tracking-wide uppercase"
-                                >
+                              <div className="border-background-border/20 rounded-xl border bg-white/10 p-3 backdrop-blur-lg">
+                                <Typography as="p" className="tracking-wide uppercase">
                                   Order summary
                                 </Typography>
                                 <div className="mt-2 grid gap-1 text-xs">
                                   <Typography as="p">
-                                    <Typography as="span" className="text-foreground-dimmed3">
+                                    <Typography as="span" variant="caption">
                                       Order ID:
                                     </Typography>{" "}
                                     {order.id}
                                   </Typography>
                                   <Typography as="p">
-                                    <Typography as="span" className="text-foreground-dimmed3">
+                                    <Typography as="span" variant="caption">
                                       User ID:
                                     </Typography>{" "}
                                     {order.userId}
                                   </Typography>
                                   <Typography as="p">
-                                    <Typography as="span" className="text-foreground-dimmed3">
+                                    <Typography as="span" variant="caption">
                                       Created:
                                     </Typography>{" "}
                                     {new Date(order.createdAt).toLocaleString()}
                                   </Typography>
                                   <Typography as="p">
-                                    <Typography as="span" className="text-foreground-dimmed3">
+                                    <Typography as="span" variant="caption">
                                       Plan:
                                     </Typography>{" "}
                                     {order.subscriptionPlan}
@@ -474,43 +490,40 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                 </div>
                               </div>
 
-                              <div className="border-background-border bg-background rounded border p-3">
-                                <Typography
-                                  as="p"
-                                  className="text-foreground-dimmed2 text-xs font-semibold tracking-wide uppercase"
-                                >
+                              <div className="border-background-border/20 rounded-xl border bg-white/10 p-3 backdrop-blur-lg">
+                                <Typography as="p" className="tracking-wide uppercase">
                                   Financial summary
                                 </Typography>
                                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
                                   <div>
-                                    <Typography as="p" className="text-foreground-dimmed3">
+                                    <Typography as="p" variant="caption">
                                       Gross
                                     </Typography>
-                                    <Typography as="p" className="text-sm font-semibold">
+                                    <Typography as="p" variant="label">
                                       ${order.estimatedPlanTotal.toFixed(2)}
                                     </Typography>
                                   </div>
                                   <div>
-                                    <Typography as="p" className="text-foreground-dimmed3">
+                                    <Typography as="p" variant="caption">
                                       Discount
                                     </Typography>
-                                    <Typography as="p" className="text-sm font-semibold">
+                                    <Typography as="p" variant="label">
                                       ${discountAmount.toFixed(2)}
                                     </Typography>
                                   </div>
                                   <div>
-                                    <Typography as="p" className="text-foreground-dimmed3">
+                                    <Typography as="p" variant="caption">
                                       Refunded
                                     </Typography>
-                                    <Typography as="p" className="text-sm font-semibold">
+                                    <Typography as="p" variant="label">
                                       ${refundedAmount.toFixed(2)}
                                     </Typography>
                                   </div>
                                   <div>
-                                    <Typography as="p" className="text-foreground-dimmed3">
+                                    <Typography as="p" variant="caption">
                                       Net
                                     </Typography>
-                                    <Typography as="p" className="text-sm font-semibold">
+                                    <Typography as="p" variant="label">
                                       ${netTotal.toFixed(2)}
                                     </Typography>
                                   </div>
@@ -518,20 +531,17 @@ export function OrdersTab({ model }: OrdersTabProps) {
                               </div>
                             </div>
 
-                            <div className="border-background-border bg-background rounded border p-3">
-                              <Typography
-                                as="p"
-                                className="text-foreground-dimmed2 text-xs font-semibold tracking-wide uppercase"
-                              >
+                            <div className="border-background-border/20 rounded-xl border bg-white/10 p-3 backdrop-blur-lg">
+                              <Typography as="p" className="tracking-wide uppercase">
                                 Order actions
                               </Typography>
                               <div className="mt-2 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                                <div className="border-background-border rounded border p-2">
-                                  <Typography as="p" className="mb-1 text-xs font-medium">
+                                <div className="border-background-border/20 rounded-xl border bg-white/5 p-2">
+                                  <Typography as="p" variant="label" className="mb-1">
                                     Status
                                   </Typography>
                                   <FormSelect
-                                    className="rounded border p-1 text-xs"
+                                    className="rounded-lg"
                                     value={order.status}
                                     onChange={event =>
                                       void handleStatusChange(
@@ -548,12 +558,12 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                   </FormSelect>
                                 </div>
 
-                                <div className="border-background-border rounded border p-2">
-                                  <Typography as="p" className="mb-1 text-xs font-medium">
+                                <div className="border-background-border/20 rounded-xl border bg-white/5 p-2">
+                                  <Typography as="p" variant="label" className="mb-1">
                                     Apply discount code
                                   </Typography>
                                   <FormInput
-                                    className="rounded border p-1 text-xs"
+                                    className="rounded-lg"
                                     placeholder="Code"
                                     value={getDiscountDraft(order.id).code}
                                     onChange={event =>
@@ -568,20 +578,20 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                   />
                                   <Button
                                     type="button"
-                                    className="mt-1 w-full rounded bg-green-700 px-2 py-1 text-xs text-white"
+                                    className="btn-secondary mt-1 w-full"
                                     onPress={() => void handleApplyDiscount(order)}
                                   >
                                     Apply code
                                   </Button>
                                 </div>
 
-                                <div className="border-background-border rounded border p-2">
-                                  <Typography as="p" className="mb-1 text-xs font-medium">
+                                <div className="border-background-border/20 rounded-xl border bg-white/5 p-2">
+                                  <Typography as="p" variant="label" className="mb-1">
                                     Request refund
                                   </Typography>
                                   <div className="grid grid-cols-1 gap-1">
                                     <FormInput
-                                      className="rounded border p-1 text-xs"
+                                      className="rounded-lg"
                                       placeholder="Amount"
                                       type="number"
                                       min={0}
@@ -598,7 +608,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                       }
                                     />
                                     <FormSelect
-                                      className="rounded border p-1 text-xs"
+                                      className="rounded-lg"
                                       value={getRefundDraft(order.id).reasonCode}
                                       onChange={event =>
                                         setRefundDrafts(prev => ({
@@ -617,7 +627,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                       ))}
                                     </FormSelect>
                                     <FormInput
-                                      className="rounded border p-1 text-xs"
+                                      className="rounded-lg"
                                       placeholder="Reason details"
                                       value={getRefundDraft(order.id).reasonDetails}
                                       onChange={event =>
@@ -633,19 +643,19 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                   </div>
                                   <Button
                                     type="button"
-                                    className="mt-1 w-full rounded bg-slate-700 px-2 py-1 text-xs text-white"
+                                    className="btn-secondary mt-1 w-full"
                                     onPress={() => void handleRequestRefund(order)}
                                   >
                                     Request refund
                                   </Button>
                                 </div>
 
-                                <div className="border-background-border rounded border p-2">
-                                  <Typography as="p" className="mb-1 text-xs font-medium">
+                                <div className="border-background-border/20 rounded-xl border bg-white/5 p-2">
+                                  <Typography as="p" variant="label" className="mb-1">
                                     Adjustment note
                                   </Typography>
                                   <textarea
-                                    className="border-background-border w-full rounded border p-1 text-xs"
+                                    className="border-background-border-dimmed1 bg-background-dimmed1 w-full rounded-lg border px-3 py-2 text-sm transition-all duration-300 outline-none focus:border-yellow-500 focus:ring-yellow-500"
                                     rows={3}
                                     value={noteDrafts[order.id] ?? ""}
                                     onChange={event =>
@@ -657,7 +667,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                   />
                                   <Button
                                     type="button"
-                                    className="mt-1 w-full rounded bg-gray-700 px-2 py-1 text-xs text-white"
+                                    className="btn-tertiary mt-1 w-full"
                                     onPress={() => void handleSaveAdjustmentNote(order)}
                                   >
                                     Save note
@@ -666,11 +676,8 @@ export function OrdersTab({ model }: OrdersTabProps) {
                               </div>
                             </div>
 
-                            <div className="border-background-border bg-background rounded border p-3">
-                              <Typography
-                                as="p"
-                                className="text-foreground-dimmed2 text-xs font-semibold tracking-wide uppercase"
-                              >
+                            <div className="border-background-border/20 rounded-xl border bg-white/10 p-3 backdrop-blur-lg">
+                              <Typography as="p" className="tracking-wide uppercase">
                                 Refund history
                               </Typography>
                               {order.refunds.length > 0 ? (
@@ -678,15 +685,15 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                   {order.refunds.map(refund => (
                                     <div
                                       key={refund.id}
-                                      className="border-background-border rounded border p-2 text-xs"
+                                      className="border-background-border/20 rounded-xl border bg-white/5 p-2 text-xs"
                                     >
                                       <div className="flex items-center justify-between gap-2">
-                                        <Typography as="p" className="font-medium">
+                                        <Typography as="p" variant="label">
                                           ${refund.amount.toFixed(2)}
                                         </Typography>
                                         <Typography
                                           as="span"
-                                          className={`text-xxs inline-flex rounded-full border px-2 py-0.5 font-medium ${getRefundStatusBadgeClass(refund.status)}`}
+                                          className={`inline-flex rounded-full border px-2 py-0.5 ${getRefundStatusBadgeClass(refund.status)}`}
                                         >
                                           {refund.status}
                                         </Typography>
@@ -708,7 +715,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                       {refund.status === "requested" ? (
                                         <Button
                                           type="button"
-                                          className="mt-1 w-full rounded bg-indigo-700 px-2 py-1 text-xs text-white"
+                                          className="btn-secondary mt-1 w-full"
                                           onPress={() => void handleApproveRefund(order, refund.id)}
                                         >
                                           Approve refund
@@ -717,7 +724,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                       {refund.status === "approved" ? (
                                         <Button
                                           type="button"
-                                          className="mt-1 w-full rounded bg-purple-700 px-2 py-1 text-xs text-white"
+                                          className="btn-tertiary mt-1 w-full"
                                           onPress={() => void handleProcessRefund(order, refund.id)}
                                         >
                                           Mark processed
@@ -727,7 +734,7 @@ export function OrdersTab({ model }: OrdersTabProps) {
                                   ))}
                                 </div>
                               ) : (
-                                <Typography as="p" className="text-foreground-dimmed3 mt-2 text-xs">
+                                <Typography as="p" variant="caption" className="mt-2">
                                   No refund requests for this order.
                                 </Typography>
                               )}

@@ -8,7 +8,6 @@ import PackageIcon from "../assets/svgs/package.svg?react";
 import AboutIcon from "../assets/svgs/globe.svg?react";
 import ProfileIcon from "../assets/svgs/profile.svg?react";
 import LoginIcon from "../assets/svgs/login.svg?react";
-import TruckIcon from "../assets/svgs/truck.svg?react";
 import LeafIcon from "../assets/svgs/leaf.svg?react";
 import FAQIcon from "../assets/svgs/question.svg?react";
 import SignUpIcon from "../assets/svgs/signup.svg?react";
@@ -19,7 +18,7 @@ import Typography from "./Typography";
 
 const desktopLinkClass = ({ isActive }: { isActive: boolean }) =>
   clsx(
-    "rounded-full text-white bg-white/20 duration-300 gap-2 py-2 px-5 flex items-center hover:bg-white/30 transition-all overflow-hidden whitespace-nowrap",
+    "rounded-full text-white bg-white/20 duration-300 gap-2 py-1 lg:py-2 px-5 flex items-center hover:bg-white/30 transition-all overflow-hidden whitespace-nowrap",
     {
       "text-foreground bg-yellow-500 hover:bg-yellow-500 [&_svg]:text-foreground": isActive,
     }
@@ -30,7 +29,7 @@ const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
     "bg-yellow-500 hover:bg-yellow-500 [&_svg]:text-foreground": isActive,
   });
 
-const iconStyles = "flex size-5 shrink-0 md:hidden text-foreground-dimmed4";
+const iconStyles = "flex size-5 shrink-0 lg:hidden text-foreground-dimmed4";
 
 const dropdownLinkClass = ({ isActive }: { isActive: boolean }) =>
   clsx("flex items-center gap-2 px-4 py-2 text-white transition-all hover:bg-white/10", {
@@ -126,20 +125,20 @@ export default function Navbar() {
     <>
       <header
         className={clsx(
-          "text-primary-foreground sticky top-0 z-20 w-full transition-all duration-300",
+          "text-primary-foreground sticky top-0 z-20 flex h-(--navbar-height) w-full items-center transition-all duration-300",
           hasScrolled
             ? "border-b border-white/10 bg-white/10 shadow-lg backdrop-blur-lg"
             : "border-transparent bg-transparent shadow-none"
         )}
       >
-        <nav className="px-appSpacing max-w-9xl mx-auto flex w-full items-center justify-between py-3">
+        <nav className="px-appSpacing max-w-9xl mx-auto flex w-full items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2 text-2xl font-semibold">
             <LeafIcon className="flex size-8 shrink-0" />
             Eco Harvest
           </NavLink>
 
           {/* Desktop */}
-          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full bg-black/10 p-1 shadow-lg backdrop-blur-lg md:flex">
+          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-white/5 bg-black/10 p-1 shadow-lg backdrop-blur-lg lg:flex">
             <li>
               <NavLink to="/" end className={desktopLinkClass}>
                 <HomeIcon className={iconStyles} />
@@ -169,7 +168,7 @@ export default function Navbar() {
           </ul>
           <div className="flex items-center gap-4">
             {user ? (
-              <div className="relative hidden md:flex" ref={profileMenuRef}>
+              <div className="relative hidden lg:flex" ref={profileMenuRef}>
                 <Button
                   type="button"
                   onPress={() => setIsProfileMenuOpen(o => !o)}
@@ -184,20 +183,12 @@ export default function Navbar() {
                   <div className="bg-background absolute top-full right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
                     <div className="flex flex-col gap-1 py-1">
                       <NavLink
-                        to="/profile"
+                        to="/account"
                         className={dropdownLinkClass}
                         onClick={() => setIsProfileMenuOpen(false)}
                       >
                         <ProfileIcon className="size-4 shrink-0" />
-                        Profile
-                      </NavLink>
-                      <NavLink
-                        to="/orders"
-                        className={dropdownLinkClass}
-                        onClick={() => setIsProfileMenuOpen(false)}
-                      >
-                        <TruckIcon className="size-4 shrink-0" />
-                        Orders
+                        Account
                       </NavLink>
                       <NavLink
                         to="/build-your-box"
@@ -240,7 +231,7 @@ export default function Navbar() {
               aria-label="Open navigation menu"
               aria-expanded={isMobileNavOpen}
               aria-controls="mobile-nav"
-              className="cursor-pointer rounded p-1 transition-colors hover:bg-black/10 hover:backdrop-blur-lg md:hidden"
+              className="cursor-pointer rounded p-1 transition-colors hover:bg-black/10 hover:backdrop-blur-lg lg:hidden"
               onPress={() => setIsMobileNavOpen(true)}
             >
               <MenuIcon className="size-8" />
@@ -251,7 +242,7 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-black/30 transition-opacity md:hidden ${
+        className={`fixed inset-0 z-40 bg-black/30 transition-opacity lg:hidden ${
           isMobileNavOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={() => setIsMobileNavOpen(false)}
@@ -260,7 +251,7 @@ export default function Navbar() {
       <aside
         id="mobile-nav"
         aria-label="Mobile navigation"
-        className={`bg-background/50 xs:border-background-border xs:w-72 xs:border-l fixed top-0 right-0 z-50 h-full w-full p-4 shadow-lg backdrop-blur-lg transition-transform duration-300 md:hidden ${
+        className={`bg-background/50 xs:border-background-border xs:w-72 xs:border-l fixed top-0 right-0 z-50 h-full w-full border-white/10 p-4 shadow-lg backdrop-blur-lg transition-transform duration-300 lg:hidden ${
           isMobileNavOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -301,20 +292,12 @@ export default function Navbar() {
             {user && (
               <>
                 <NavLink
-                  to="/profile"
+                  to="/account"
                   className={mobileLinkClass}
                   onClick={() => setIsProfileMenuOpen(false)}
                 >
                   <ProfileIcon className={iconStyles} />
-                  Profile
-                </NavLink>
-                <NavLink
-                  to="/orders"
-                  className={mobileLinkClass}
-                  onClick={() => setIsProfileMenuOpen(false)}
-                >
-                  <TruckIcon className={iconStyles} />
-                  Orders
+                  Account
                 </NavLink>
                 <NavLink
                   to="/build-your-box"

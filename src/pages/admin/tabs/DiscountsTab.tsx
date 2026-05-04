@@ -31,17 +31,22 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
   const { discountForm, setDiscountForm, discountCodes, handleSaveDiscountCode } = model;
 
   return (
-    <section className="border-background-border bg-background rounded border p-4 shadow">
-      <Typography as="h2" className="text-foreground-dimmed1 text-lg font-semibold">Discount Codes</Typography>
-      <div className="mt-3 grid gap-2 md:grid-cols-4">
+    <section className="border-background-border/20 rounded-2xl border bg-white/10 p-6 shadow-md backdrop-blur-lg">
+      <div className="flex flex-col gap-1">
+        <Typography as="h2">Discount Codes</Typography>
+        <Typography as="p" variant="muted">
+          Create and monitor promotions used at checkout.
+        </Typography>
+      </div>
+      <div className="mt-4 grid gap-2 md:grid-cols-4">
         <FormInput
-          className="rounded border p-2 text-sm"
+          className="rounded-lg"
           placeholder="Code"
           value={discountForm.code}
           onChange={e => setDiscountForm(prev => ({ ...prev, code: e.target.value }))}
         />
         <FormInput
-          className="rounded border p-2 text-sm"
+          className="rounded-lg"
           placeholder="Amount"
           type="number"
           min={0}
@@ -50,7 +55,7 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           onChange={e => setDiscountForm(prev => ({ ...prev, amount: e.target.value }))}
         />
         <FormSelect
-          className="rounded border p-2 text-sm"
+          className="rounded-lg"
           value={discountForm.type}
           onChange={e =>
             setDiscountForm(prev => ({ ...prev, type: e.target.value as DiscountType }))
@@ -60,7 +65,7 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           <option value="percent">Percent (%)</option>
         </FormSelect>
         <FormInput
-          className="rounded border p-2 text-sm"
+          className="rounded-lg"
           placeholder="Max uses (optional)"
           type="number"
           min={1}
@@ -69,7 +74,7 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           onChange={e => setDiscountForm(prev => ({ ...prev, maxUses: e.target.value }))}
         />
         <FormInput
-          className="rounded border p-2 text-sm"
+          className="rounded-lg"
           placeholder="Min order total (optional)"
           type="number"
           min={0}
@@ -78,7 +83,7 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
           onChange={e => setDiscountForm(prev => ({ ...prev, minOrderTotal: e.target.value }))}
         />
         <FormInput
-          className="rounded border p-2 text-sm"
+          className="rounded-lg"
           type="datetime-local"
           value={discountForm.expiresAt}
           onChange={e => setDiscountForm(prev => ({ ...prev, expiresAt: e.target.value }))}
@@ -107,7 +112,7 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
         </Checkbox>
         <Button
           type="button"
-          className="rounded bg-green-700 px-3 py-2 text-sm text-white transition-opacity hover:opacity-90"
+          className="btn-secondary"
           onPress={() => void handleSaveDiscountCode()}
         >
           Save Discount Code
@@ -115,47 +120,84 @@ export function DiscountsTab({ model }: DiscountsTabProps) {
       </div>
 
       {discountCodes.length > 0 ? (
-        <div className="mt-3 overflow-x-auto">
-          <table className="min-w-full border-collapse text-left text-xs">
+        <div className="border-background-border/20 mt-4 overflow-x-auto rounded-2xl border bg-white/5">
+          <table className="min-w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="text-foreground-dimmed1 border-background-border border-b">
-                <th className="px-2 py-2">Code</th>
-                <th className="px-2 py-2">Value</th>
-                <th className="px-2 py-2">Usage</th>
-                <th className="px-2 py-2">Min Total</th>
-                <th className="px-2 py-2">Expires</th>
-                <th className="px-2 py-2">Active</th>
+              <tr className="text-foreground-dimmed1 border-b border-white/10 bg-white/5">
+                <th className="px-3 py-3">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Code
+                  </Typography>
+                </th>
+                <th className="px-3 py-3">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Value
+                  </Typography>
+                </th>
+                <th className="px-3 py-3">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Usage
+                  </Typography>
+                </th>
+                <th className="px-3 py-3">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Min Total
+                  </Typography>
+                </th>
+                <th className="px-3 py-3">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Expires
+                  </Typography>
+                </th>
+                <th className="px-3 py-3">
+                  <Typography as="span" variant="caption" className="tracking-wide uppercase">
+                    Active
+                  </Typography>
+                </th>
               </tr>
             </thead>
             <tbody>
               {discountCodes.map(discount => (
-                <tr key={discount.id} className="border-background-border border-b">
-                  <td className="px-2 py-2 font-medium">{discount.code}</td>
-                  <td className="px-2 py-2">
+                <tr key={discount.id} className="border-b border-white/10 hover:bg-white/5">
+                  <td className="px-3 py-3 font-mono text-xs font-medium">{discount.code}</td>
+                  <td className="px-3 py-3">
                     {discount.type === "percent"
                       ? `${discount.amount.toFixed(2)}%`
                       : `$${discount.amount.toFixed(2)}`}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-3 py-3">
                     {discount.usedCount}
                     {discount.maxUses !== null ? ` / ${discount.maxUses}` : ""}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-3 py-3">
                     {discount.minOrderTotal !== null
                       ? `$${discount.minOrderTotal.toFixed(2)}`
                       : "-"}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-3 py-3 whitespace-nowrap">
                     {discount.expiresAt ? new Date(discount.expiresAt).toLocaleString() : "-"}
                   </td>
-                  <td className="px-2 py-2">{discount.isActive ? "Yes" : "No"}</td>
+                  <td className="px-3 py-3">
+                    <Typography
+                      as="span"
+                      className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium tracking-wide uppercase ${
+                        discount.isActive
+                          ? "border-green-500/30 bg-green-500/15 text-green-200"
+                          : "text-foreground-dimmed2 border-white/20 bg-white/10"
+                      }`}
+                    >
+                      {discount.isActive ? "Active" : "Inactive"}
+                    </Typography>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <Typography as="p" className="text-foreground-dimmed2 mt-2 text-sm">No discount codes created yet.</Typography>
+        <Typography as="p" variant="muted" className="mt-2">
+          No discount codes created yet.
+        </Typography>
       )}
     </section>
   );

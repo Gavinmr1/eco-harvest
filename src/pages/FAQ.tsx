@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "react-aria-components";
+import PageHeader from "../components/PageHeader";
 import Typography from "../components/Typography";
 
 type FAQItem = {
@@ -58,14 +59,11 @@ export default function FAQ() {
   };
 
   return (
-    <main className="text-foreground dark:text-secondary-foreground z-10 flex flex-col py-[calc(var(--appSpacing)*2)]">
-      <section className="px-appSpacing mx-auto mb-10 max-w-4xl text-center">
-        <Typography as="h1" className="text-foreground mb-4 text-4xl font-bold">Frequently Asked Questions</Typography>
-        <Typography as="p" className="text-foreground-dimmed3 mx-auto max-w-2xl text-lg">
-          Everything you need to know about subscriptions, deliveries, and managing your Eco Harvest
-          box.
-        </Typography>
-      </section>
+    <main className="text-foreground dark:text-secondary-foreground gap-appSpacing z-10 flex flex-col py-[calc(var(--appSpacing)*2)]">
+      <PageHeader
+        title="Frequently Asked Questions"
+        subtitle="Everything you need to know about subscriptions, deliveries, and managing your Eco Harvest box."
+      />
 
       <section className="px-appSpacing mx-auto w-full max-w-4xl">
         <div className="flex flex-col gap-3">
@@ -82,13 +80,20 @@ export default function FAQ() {
                   onPress={() => toggleItem(index)}
                   aria-expanded={isOpen}
                 >
-                  <Typography as="h2" className="text-foreground text-lg font-medium">{item.question}</Typography>
-                  <Typography as="span" className="text-foreground-dimmed3 w-5 text-center text-xl leading-none">
+                  <Typography as="h2" displayAs="h4">
+                    {item.question}
+                  </Typography>
+                  <Typography as="span" variant="caption" className="w-5 text-center leading-none">
                     {isOpen ? "-" : "+"}
                   </Typography>
                 </Button>
                 {isOpen ? (
-                  <Typography as="p" className="text-foreground-dimmed3 border-t border-white/10 px-5 py-4">
+                  <Typography
+                    as="p"
+                    displayAs="body"
+                    variant="muted"
+                    className="border-t border-white/10 px-5 py-4"
+                  >
                     {item.answer}
                   </Typography>
                 ) : null}

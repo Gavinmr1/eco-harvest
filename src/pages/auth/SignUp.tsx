@@ -51,10 +51,12 @@ export default function SignUp() {
     <div className="z-10 flex size-full grow flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-card/10 p-appSpacing gap-appInnerSpacing mx-auto flex w-full max-w-md flex-col rounded-2xl shadow-md backdrop-blur-lg"
+        className="bg-card/10 p-appSpacing gap-appInnerSpacing mx-auto flex w-full max-w-md flex-col rounded-2xl border border-white/10 shadow-md backdrop-blur-lg"
       >
-        <Typography as="h2" className="mx-auto text-2xl font-semibold">Sign Up</Typography>
-        {error ? <Typography as="p" className="text-sm text-red-600">{error}</Typography> : null}
+        <Typography as="h2" className="mx-auto">
+          Sign Up
+        </Typography>
+        {error ? <Typography as="p">{error}</Typography> : null}
         <FormInput
           type="text"
           value={fullName}
@@ -128,7 +130,7 @@ export default function SignUp() {
                 >
                   {isSelected ? "✓" : null}
                 </div>
-                <Typography as="span" className="text-foreground-dimmed2">
+                <Typography as="span" variant="muted">
                   I agree to the Terms of Service and Privacy Policy.
                 </Typography>
               </>
@@ -153,7 +155,7 @@ export default function SignUp() {
                 >
                   {isSelected ? "✓" : null}
                 </div>
-                <Typography as="span" className="text-foreground-dimmed2">
+                <Typography as="span" variant="muted">
                   Send me product updates and seasonal offers.
                 </Typography>
               </>
