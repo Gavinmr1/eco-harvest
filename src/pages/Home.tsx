@@ -9,8 +9,8 @@ export default function Home() {
     <div className="z-10 flex h-full w-full grow flex-col gap-[calc(var(--appSpacing)*2)]">
       {/* Hero Section */}
       <section className="px-appSpacing max-w-9xl relative mx-auto flex h-fit w-full flex-col items-center justify-between gap-[calc(var(--appSpacing)*2)] py-[calc(var(--appSpacing)*2)] md:mt-auto md:flex-row">
-        <div className="gap-appSpacing relative mx-auto flex min-h-[stretch] w-full grow flex-col justify-between">
-          <div className="gap-appSpacing flex w-full grow flex-col text-left">
+        <div className="gap-appSpacing relative mx-auto flex w-full grow flex-col justify-between md:min-h-[stretch]">
+          <div className="gap-appSpacing flex w-full flex-col text-left md:grow">
             <Typography as="h1" variant="display">
               Fresh. Local. Organic.
             </Typography>

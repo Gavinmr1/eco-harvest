@@ -129,6 +129,38 @@ firebase use <your-project-id>
 firebase deploy --only firestore
 ```
 
+### Deploy the web app
+
+This app is a Vite SPA, so the production deployment target is Firebase Hosting.
+
+1. Create or select your Firebase project.
+2. Set the required client env vars in `.env.production` or your deployment environment.
+3. Build and deploy:
+
+```bash
+npm run build
+firebase deploy --only hosting
+```
+
+Because `firebase.json` rewrites all routes to `index.html`, client-side routes like `/login`, `/account`, and `/admin` will work after refresh.
+
+### Connect your custom domain
+
+After the first Hosting deploy, add your purchased domain in the Firebase console:
+
+1. Open Firebase Console > Hosting.
+2. Choose "Add custom domain".
+3. Enter your domain name and follow the DNS verification steps.
+4. Point the domain's DNS records at Firebase's provided targets.
+
+Firebase will provision HTTPS automatically once DNS is verified.
+
+If you are launching the app for the first time, also verify these before going live:
+
+- Firebase Auth has your production domain in the authorized domains list.
+- Firestore rules are deployed.
+- `VITE_FIREBASE_*` values point to the production Firebase project.
+
 ### Asset optimization
 
 ```bash

@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   updateProfile,
   signOut,
   type User,
@@ -75,13 +76,27 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     }
   };
 
+  const sendPasswordReset = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
   const logout = async () => {
     await signOut(auth);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, adminLoading, isAdmin, login, signup, logout, refreshAdminStatus }}
+      value={{
+        user,
+        loading,
+        adminLoading,
+        isAdmin,
+        login,
+        signup,
+        sendPasswordReset,
+        logout,
+        refreshAdminStatus,
+      }}
     >
       {children}
     </AuthContext.Provider>

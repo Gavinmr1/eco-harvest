@@ -12,29 +12,4 @@ export default defineConfig({
       include: "**/*.svg?react",
     }),
   ],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) {
-            return;
-          }
-
-          if (id.includes("firebase")) {
-            return "vendor-firebase";
-          }
-
-          if (id.includes("react-slick") || id.includes("slick-carousel")) {
-            return "vendor-carousel";
-          }
-
-          if (id.includes("react") || id.includes("scheduler")) {
-            return "vendor-react";
-          }
-
-          return "vendor-misc";
-        },
-      },
-    },
-  },
 });

@@ -10,6 +10,7 @@ const FAQ = lazy(() => import("./pages/FAQ"));
 const Account = lazy(() => import("./pages/Account"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const SignUp = lazy(() => import("./pages/auth/SignUp"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const BuildYourBox = lazy(() => import("./pages/BuildYourBox"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 
@@ -58,6 +59,7 @@ export default function App() {
         />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<SignUp />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
       </Route>
     </Routes>
   );
